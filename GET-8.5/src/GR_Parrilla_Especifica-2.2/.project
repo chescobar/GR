@@ -1,0 +1,13 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.5.4
+Title=GR_Comerciales
+Startup=FMain
+Version=0.0.17
+Component=gb.image
+Component=gb.qt4
+Component=gb.form
+TabSize=2
+Translate=1
+Language=es
+ExecPath=GR_Parrilla_Especifica.gambas
+Packager=1

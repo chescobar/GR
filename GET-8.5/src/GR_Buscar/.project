@@ -1,0 +1,12 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.5.4
+Title=GR_Buscar
+Startup=FMain
+Version=0.0.4
+Component=gb.image
+Component=gb.qt4
+Component=gb.form
+TabSize=2
+Translate=1
+Language=en_US
+Packager=1

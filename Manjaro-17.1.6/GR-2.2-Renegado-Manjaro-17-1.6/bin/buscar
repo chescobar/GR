@@ -1,0 +1,8 @@
+#!/bin/bash
+cat /dev/null > $HOME/.gradio/data/tmp/buscar
+IFS=$'\r\n'
+extensiones=`cat $HOME/.gradio/data/extensiones`
+extensiones=`echo $extensiones|sed s/" "/"|"/g`
+echo $extensiones
+find $HOME -iname "*$1*"|grep -E -i \'$extensiones\' >> $HOME/.gradio/data/tmp/buscar
+IFS=" "

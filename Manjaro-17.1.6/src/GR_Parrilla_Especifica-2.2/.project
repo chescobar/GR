@@ -1,0 +1,12 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.9.2
+Title=GR_Comerciales
+Startup=FMain
+Version=0.0.16
+Component=gb.image
+Component=gb.qt5
+Component=gb.form
+TabSize=2
+Translate=1
+Language=es
+Packager=1

@@ -1,0 +1,17 @@
+[Breakpoints]
+Count=0
+
+[DebugWindow]
+Count=0
+
+[Executable]
+Path="GR_ClientSocketCom.gambas"
+
+[OpenFile]
+Active=1
+File[1]=".src/FrmMain.form"
+Count=1
+
+[Watches]
+Count=0
+

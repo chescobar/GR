@@ -1,0 +1,272 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,128,71)
+  Text = ("G Radio - Programar Eventos en Espera ")
+  Icon = Picture["gradio.png"]
+  Resizable = False
+  { cueZ Menu
+    Text = ("CUE3")
+    Visible = False
+    { CUE3 Menu
+      Text = ("CUE")
+      Picture = Picture["icon:/32/volume"]
+      Shortcut = "Alt+C"
+    }
+    { Subir Menu
+      Text = ("Subir")
+      Picture = Picture["icon:/32/up"]
+      Shortcut = "Alt+S"
+    }
+    { Bajar Menu
+      Text = ("Bajar")
+      Picture = Picture["icon:/32/down"]
+      Shortcut = "Alt+B"
+    }
+    { Borrar Menu
+      Text = ("Borrar")
+      Picture = Picture["icon:/32/delete"]
+      Shortcut = "Alt+X"
+    }
+  }
+  { Menu1 Menu
+    Text = ("Menu1")
+    Visible = False
+    { cue2 Menu
+      Text = ("CUE")
+      Picture = Picture["icon:/32/volume"]
+      Shortcut = "Alt+C"
+    }
+    { Insertar Menu
+      Text = ("Insertar")
+      Picture = Picture["icon:/32/jump"]
+      Shortcut = "Alt+V"
+    }
+  }
+  { Button1 Button
+    MoveScaled(8,1,7,5)
+    ToolTip = ("Seleccionar Archivo Para Evento")
+    Picture = Picture["icon:/22/audio"]
+  }
+  { Button_Insertar Button
+    MoveScaled(1,6,14,5)
+    ToolTip = ("Insertar Comercial")
+    Picture = Picture["icon:/22/jump"]
+  }
+  { bSubir Button
+    MoveScaled(1,12,13.75,6)
+    ToolTip = ("Subir una posición")
+    Picture = Picture["icon:/22/up"]
+  }
+  { Button_Borrar Button
+    MoveScaled(1,18,13.75,6)
+    ToolTip = ("Borrar seleccionado")
+    Picture = Picture["icon:/22/trash"]
+  }
+  { Button2 Button
+    MoveScaled(1,25,13.75,6)
+    Picture = Picture["icon:/32/internet"]
+  }
+  { ButtonSave Button
+    MoveScaled(1,32,13.75,16.25)
+    Background = &HFF0000&
+    ToolTip = ("Grabar los cambios")
+    Picture = Picture["icon:/64/save"]
+  }
+  { Panel2 Panel
+    MoveScaled(16,2,90,5)
+    Arrangement = Arrange.Horizontal
+    Border = Border.Raised
+    { Comercial ListBox
+      MoveScaled(0.875,0,89,4)
+      Font = Font["-1"]
+      Background = &H00FFFF&
+      ToolTip = ("Seleccione el comercial a insertar")
+      Expand = True
+      PopupMenu = "Menu1"
+      Border = False
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(16,8,90,40)
+    Expand = True
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    Border = Border.Raised
+    { ListaComerciales ListBox
+      MoveScaled(0,0,90,40)
+      Font = Font["Verdana,-3"]
+      Background = &H00FFFF&
+      ToolTip = ("Seleccione hora,  minuto y actualice")
+      Expand = True
+      PopupMenu = "cueZ"
+      Border = False
+    }
+  }
+  { Frame1 Frame
+    MoveScaled(108,2,19.75,43.75)
+    Text = ("Horas")
+    { CheckBox1 RadioButton
+      MoveScaled(0.875,2.625,9.375,3.375)
+      Text = ("00")
+    }
+    { CheckBox2 RadioButton
+      MoveScaled(0.875,6,9.375,3.375)
+      Text = ("01")
+    }
+    { CheckBox3 RadioButton
+      MoveScaled(0.875,9.375,9.375,3.375)
+      Text = ("02")
+    }
+    { CheckBox4 RadioButton
+      MoveScaled(0.875,12.875,9.375,3.375)
+      Text = ("03")
+    }
+    { CheckBox5 RadioButton
+      MoveScaled(0.875,16.25,9.375,3.375)
+      Text = ("04")
+    }
+    { CheckBox6 RadioButton
+      MoveScaled(0.875,19.75,9.375,3.375)
+      Text = ("05")
+    }
+    { CheckBox7 RadioButton
+      MoveScaled(0.875,23.125,9.375,3.375)
+      Text = ("06")
+    }
+    { CheckBox8 RadioButton
+      MoveScaled(0.875,26.625,9.375,3.375)
+      Text = ("07")
+    }
+    { CheckBox9 RadioButton
+      MoveScaled(0.875,30,9.375,3.375)
+      Text = ("08")
+    }
+    { CheckBox10 RadioButton
+      MoveScaled(0.875,33.375,9.375,3.375)
+      Text = ("09")
+    }
+    { CheckBox11 RadioButton
+      MoveScaled(0.875,36.875,9.375,3.375)
+      Text = ("10")
+    }
+    { CheckBox12 RadioButton
+      MoveScaled(0.875,40.25,9.375,3.375)
+      Text = ("11")
+    }
+    { CheckBox13 RadioButton
+      MoveScaled(10.25,2.625,9.375,3.375)
+      Text = ("12")
+    }
+    { CheckBox14 RadioButton
+      MoveScaled(10.25,6,9.375,3.375)
+      Text = ("13")
+    }
+    { CheckBox15 RadioButton
+      MoveScaled(10.25,9.375,9.375,3.375)
+      Text = ("14")
+    }
+    { CheckBox16 RadioButton
+      MoveScaled(10.25,12.875,9.375,3.375)
+      Text = ("15")
+    }
+    { CheckBox17 RadioButton
+      MoveScaled(10.25,16.25,9.375,3.375)
+      Text = ("16")
+    }
+    { CheckBox18 RadioButton
+      MoveScaled(10.25,19.75,9.375,3.375)
+      Text = ("17")
+    }
+    { CheckBox19 RadioButton
+      MoveScaled(10.25,23.125,9.375,3.375)
+      Text = ("18")
+    }
+    { CheckBox20 RadioButton
+      MoveScaled(10.25,26.625,9.375,3.375)
+      Text = ("19")
+    }
+    { CheckBox21 RadioButton
+      MoveScaled(10.25,30,9.375,3.375)
+      Text = ("20")
+    }
+    { CheckBox22 RadioButton
+      MoveScaled(10.25,33.375,9.375,3.375)
+      Text = ("21")
+    }
+    { CheckBox23 RadioButton
+      MoveScaled(10.25,36.875,9.375,3.375)
+      Text = ("22")
+    }
+    { CheckBox24 RadioButton
+      MoveScaled(10.25,40.25,6,2.625)
+      Text = ("23")
+    }
+  }
+  { Frame2 Frame
+    MoveScaled(107,47,20.625,18.875)
+    Text = ("Minutos")
+    { RadioButton5 RadioButton
+      MoveScaled(1.75,15.375,6.875,2.625)
+      Text = ("25")
+    }
+    { RadioButton4 RadioButton
+      MoveScaled(1.75,12.875,6,2.625)
+      Text = ("20")
+    }
+    { RadioButton3 RadioButton
+      MoveScaled(1.75,10.25,6.875,2.625)
+      Text = ("15")
+    }
+    { RadioButton2 RadioButton
+      MoveScaled(1.75,7.75,6.875,2.625)
+      Text = ("10")
+    }
+    { RadioButton1 RadioButton
+      MoveScaled(1.75,5.125,6,2.625)
+      Text = ("5")
+    }
+    { RadioButton6 RadioButton
+      MoveScaled(12,2.625,6,2.625)
+      Text = ("30")
+    }
+    { RadioButton7 RadioButton
+      MoveScaled(12,5.125,6.875,2.625)
+      Text = ("35")
+    }
+    { RadioButton9 RadioButton
+      MoveScaled(12,10.25,6,2.625)
+      Text = ("45")
+    }
+    { RadioButton8 RadioButton
+      MoveScaled(12,7.75,6.875,2.625)
+      Text = ("40")
+    }
+    { RadioButton10 RadioButton
+      MoveScaled(12,12.875,6.875,2.625)
+      Text = ("50")
+    }
+    { RadioButton11 RadioButton
+      MoveScaled(12,15.375,6.875,2.625)
+      Text = ("55")
+    }
+    { RadioButton12 RadioButton
+      MoveScaled(1.75,2.625,7.75,2.625)
+      Text = ("0")
+    }
+  }
+  { Button20 Button
+    MoveScaled(89,50,15.375,15.375)
+    ToolTip = ("Revisar pautaje")
+    Picture = Picture["icon:/48/replace"]
+  }
+  { Label1 Label
+    MoveScaled(2,49,80,21)
+    Text = ("PROGRAMACIÓN DE COMERCIALES\nPara editar el pautaje de comerciales, seleccione la hora y minuto a editar y presione\n\"Revisar\". Luego de cargar la pauta puede cambiar el orden de los comerciales o insertar\nuno nuevo.\n\nPara insertar un nuevo comercial, selecciónelo en la parte superior, y luego presione\nel botón de insertar.\n\nMientras no grabe los cambios, estos no surtiran efecto")
+  }
+  { Button3 Button
+    MoveScaled(1,1,7,5)
+    ToolTip = ("Seleccionar Carpeta con  Audios Para Eventos")
+    Picture = Picture["icon:/22/open"]
+  }
+}

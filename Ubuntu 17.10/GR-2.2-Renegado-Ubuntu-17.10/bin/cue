@@ -1,0 +1,11 @@
+#!/bin/bash
+id=`whoami`
+device=`cat /home/$id/.gradio/data/devcue`
+echo "device: " $device
+#archivo=`echo $("$1" "${filepath%.*}")`
+archivo=`echo "$1" | rev | cut -d"/" -f1 | rev`
+echo $archivo
+audio=`echo "$1"| awk -F "|" {'print $1'}`
+xterm  -fg Green -bg Red -title "G Radio CUE - $archivo"  -geometry 80x3+25+250 -e mplayer $device  "$audio"
+exit 0
+

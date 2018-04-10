@@ -1,0 +1,260 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,134,84)
+  Text = ("G Radio - Programar Parrilla Específica")
+  Icon = Picture["gradio.png"]
+  Resizable = False
+  { MenuParrilla Menu
+    Text = ("Menu1")
+    Visible = False
+    { Duplicar Menu
+      Text = ("Duplicar")
+      Picture = Picture["icon:/16/wizard"]
+      Shortcut = "Alt+D"
+    }
+    { Subir Menu
+      Text = ("Subir")
+      Picture = Picture["icon:/16/up"]
+      Shortcut = "Alt+S"
+    }
+    { Bajar Menu
+      Text = ("Bajar")
+      Picture = Picture["icon:/16/down"]
+      Shortcut = "Alt+B"
+    }
+    { Borrar Menu
+      Text = ("Borrar")
+      Picture = Picture["icon:/16/delete"]
+      Shortcut = "Alt+X"
+    }
+    { BorrarTodo Menu
+      Text = ("Borrar todo")
+      Picture = Picture["icon:/16/delete"]
+      Shortcut = "Alt+Z"
+    }
+  }
+  { MenuAnadir Menu
+    Text = ("MenuAnadir")
+    Visible = False
+    { AnadirParrilla Menu
+      Text = ("Añadir a la Parrilla")
+      Picture = Picture["icon:/16/add"]
+      Shortcut = "Alt+P"
+    }
+    { Cue Menu
+      Text = ("Cue")
+      Picture = Picture["icon:/16/volume"]
+      Shortcut = "Alt+C"
+    }
+  }
+  { ButtonSave Button
+    MoveScaled(113,76,20,7)
+    Background = &HFF0000&
+    ToolTip = ("Grabar los cambios")
+    Picture = Picture["icon:/32/save"]
+  }
+  { Frame1 Frame
+    MoveScaled(113,1,19.75,43.75)
+    Text = ("Horas")
+    { CheckBox1 RadioButton
+      MoveScaled(0.875,2.625,9.375,3.375)
+      Text = ("00")
+    }
+    { CheckBox2 RadioButton
+      MoveScaled(0.875,6,9.375,3.375)
+      Text = ("01")
+    }
+    { CheckBox3 RadioButton
+      MoveScaled(0.875,9.375,9.375,3.375)
+      Text = ("02")
+    }
+    { CheckBox4 RadioButton
+      MoveScaled(0.875,12.875,9.375,3.375)
+      Text = ("03")
+    }
+    { CheckBox5 RadioButton
+      MoveScaled(0.875,16.25,9.375,3.375)
+      Text = ("04")
+    }
+    { CheckBox6 RadioButton
+      MoveScaled(0.875,19.75,9.375,3.375)
+      Text = ("05")
+    }
+    { CheckBox7 RadioButton
+      MoveScaled(0.875,23.125,9.375,3.375)
+      Text = ("06")
+    }
+    { CheckBox8 RadioButton
+      MoveScaled(0.875,26.625,9.375,3.375)
+      Text = ("07")
+    }
+    { CheckBox9 RadioButton
+      MoveScaled(0.875,30,9.375,3.375)
+      Text = ("08")
+    }
+    { CheckBox10 RadioButton
+      MoveScaled(0.875,33.375,9.375,3.375)
+      Text = ("09")
+    }
+    { CheckBox11 RadioButton
+      MoveScaled(0.875,36.875,9.375,3.375)
+      Text = ("10")
+    }
+    { CheckBox12 RadioButton
+      MoveScaled(0.875,40.25,9.375,3.375)
+      Text = ("11")
+    }
+    { CheckBox13 RadioButton
+      MoveScaled(10.25,2.625,9.375,3.375)
+      Text = ("12")
+    }
+    { CheckBox14 RadioButton
+      MoveScaled(10.25,6,9.375,3.375)
+      Text = ("13")
+    }
+    { CheckBox15 RadioButton
+      MoveScaled(10.25,9.375,9.375,3.375)
+      Text = ("14")
+    }
+    { CheckBox16 RadioButton
+      MoveScaled(10.25,12.875,9.375,3.375)
+      Text = ("15")
+    }
+    { CheckBox17 RadioButton
+      MoveScaled(10.25,16.25,9.375,3.375)
+      Text = ("16")
+    }
+    { CheckBox18 RadioButton
+      MoveScaled(10.25,19.75,9.375,3.375)
+      Text = ("17")
+    }
+    { CheckBox19 RadioButton
+      MoveScaled(10.25,23.125,9.375,3.375)
+      Text = ("18")
+    }
+    { CheckBox20 RadioButton
+      MoveScaled(10.25,26.625,9.375,3.375)
+      Text = ("19")
+    }
+    { CheckBox21 RadioButton
+      MoveScaled(10.25,30,9.375,3.375)
+      Text = ("20")
+    }
+    { CheckBox22 RadioButton
+      MoveScaled(10.25,33.375,9.375,3.375)
+      Text = ("21")
+    }
+    { CheckBox23 RadioButton
+      MoveScaled(10.25,36.875,9.375,3.375)
+      Text = ("22")
+    }
+    { CheckBox24 RadioButton
+      MoveScaled(10.25,40.25,6,2.625)
+      Text = ("23")
+    }
+  }
+  { Frame2 Frame
+    MoveScaled(113,45,20,22)
+    Text = ("Día")
+    { RadioButtonSabado RadioButton
+      MoveScaled(1.75,15.375,13,3)
+      Font = Font["-1"]
+      Text = ("Sábado")
+    }
+    { RadioButtonViernes RadioButton
+      MoveScaled(1.75,12.875,11,3)
+      Font = Font["-1"]
+      Text = ("Viernes")
+    }
+    { RadioButtonJueves RadioButton
+      MoveScaled(1.75,10.25,12,3)
+      Font = Font["-1"]
+      Text = ("Jueves")
+    }
+    { RadioButtonMiercoles RadioButton
+      MoveScaled(1.75,7.75,13,3)
+      Font = Font["-1"]
+      Text = ("Miércoles")
+    }
+    { RadioButtonMartes RadioButton
+      MoveScaled(1.75,5.125,12,3)
+      Font = Font["-1"]
+      Text = ("Martes")
+    }
+    { RadioButtonDomingo RadioButton
+      MoveScaled(1.75,18,13,3)
+      Font = Font["-1"]
+      Text = ("Domingo")
+    }
+    { RadioButtonLunes RadioButton
+      MoveScaled(1.75,2.625,12,3)
+      Font = Font["-1"]
+      Text = ("Lunes")
+    }
+  }
+  { Button20 Button
+    MoveScaled(113,68,20,7)
+    ToolTip = ("Revisar pautaje")
+    Picture = Picture["icon:/32/find"]
+  }
+  { Panel3 Panel
+    MoveScaled(1,5,111,78)
+    { HSplit1 HSplit
+      MoveScaled(0,1,115,77)
+      { VSplit1 VSplit
+        MoveScaled(1,1,60,74)
+        { DirView1 DirView
+          MoveScaled(1,4,59,34)
+          Expand = True
+          PopupMenu = "MenuAnadir"
+        }
+        { FileView1 FileView
+          MoveScaled(1,38,59,32)
+          Expand = True
+          PopupMenu = "MenuAnadir"
+          ShowDetailed = True
+          ShowPreview = True
+        }
+      }
+      { ListBoxParrilla ListBox
+        MoveScaled(62,0,50,74)
+        Font = Font["Bold"]
+        Background = Color.Yellow
+        ToolTip = ("PROGRAMACIÓN DE LA PARRILLA\nPara editar la parrila musical, seleccione el día y la hora a editar y presione\n\"Revisar\". Luego de cargar la parrilla puede cambiar el orden de esta o insertar\nun nuevo tema.\n\nPara insertar un nuevo tema, selecciónelo en la parte superior, y luego presione\nel botón de insertar.\n\nMientras no grabe los cambios, estos no surtiran efecto")
+        Drop = True
+        PopupMenu = "MenuParrilla"
+        ScrollBar = Scroll.Both
+      }
+    }
+  }
+  { Label1 Label
+    MoveScaled(2,0,71,3)
+    Font = Font["Bold"]
+    Text = ("ELABORACIÓN DE LA PARRILLA MUSICAL ESPECÍFICA POR DÍA Y HORAS")
+  }
+  { TextLabel2 TextLabel
+    MoveScaled(1,3,19,2)
+    Font = Font["-3"]
+    Text = ("FUENTES DE AUDIO")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(63,3,19,2)
+    Font = Font["-3"]
+    Text = ("PARRILLA MUSICAL")
+  }
+  { Button1 ToolButton
+    MoveScaled(89,2,9,3)
+    Text = ("Hora")
+    Picture = Picture["icon:/22/open-recent"]
+    Border = True
+  }
+  { Button2 Button
+    MoveScaled(98,2,7,3)
+    Picture = Picture["icon:/16/up"]
+  }
+  { Button4 Button
+    MoveScaled(105,2,7,3)
+    Picture = Picture["icon:/16/down"]
+  }
+}

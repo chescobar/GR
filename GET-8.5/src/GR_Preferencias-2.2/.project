@@ -1,0 +1,13 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.9.2
+Title=Configurar GR
+Startup=FMain
+Version=0.0.24
+Component=gb.image
+Component=gb.qt5
+Component=gb.form
+Description="Configura los parámetros de Guarango Radio"
+TabSize=2
+Translate=1
+Language=es
+Packager=1

@@ -1,0 +1,93 @@
+' Gambas class file
+
+Static Private Comerciales As String = " comerciales"
+Public Sub actualizar(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/BuscarComSort"
+If Error Then Return
+ cargaContenidoPautaje(ruta, l)
+
+End
+
+Private Sub cargaContenidoPautaje(ruta As String, l As ListBox)
+
+  Dim linea As New String[]
+  Dim a As Integer
+ ' Dim contenido As String
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 1
+    'linea.Foreground = Color.red
+    'l.Add(a) 
+    l.Add(linea[a])
+  Next
+End
+
+
+Public Sub Copiar_Click()
+   Dim i As Integer
+
+   For i = 0 To ListBoxResultado.Count - 1
+     If ListBoxResultado[i].Selected Then
+       Print ListBoxResultado[i].Text
+     Endif
+   Next 
+'Drag.Data(ListBoxResultado[ListBoxResultado.Index].Text)
+End
+
+Public Sub Comercial_Click()
+  If Comercial.Value = True Then
+  Comerciales = "comerciales"
+  Endif
+
+End
+
+Public Sub Evento_Click()
+  If Evento.Value = True Then
+  Comerciales = "eventos"
+  Endif
+
+End
+
+Public Sub Espera_Click()
+  If Espera.Value = True Then
+  Comerciales = "eventos-espera"
+  Endif
+
+End
+
+Public Sub ButtonBuscar_Click()
+Dim argumentos As String
+argumentos = Comerciales & " " & TextBoxBuscar.Text 
+Exec [User.Home & "/.gradio/bin/GR_BuscarCom.sh", argumentos] Wait
+'Shell "~/.gradio/bin/GR_BuscarCom.sh" Wait
+Shell "sed -i '/^$/d' ~/.gradio/data/tmp/BuscarComSort" Wait
+Try actualizar(ListBoxResultado)
+End
+
+
+Public Sub Form_Open()
+  Comerciales = "comerciales"
+End
+
+Public Sub TextBoxBuscar_Activate()
+
+  Dim argumentos As String
+argumentos = Comerciales & " " & TextBoxBuscar.Text 
+Exec [User.Home & "/.gradio/bin/GR_BuscarCom.sh", argumentos] Wait
+'Shell "~/.gradio/bin/GR_BuscarCom.sh" Wait
+Shell "sed -i '/^$/d' ~/.gradio/data/tmp/BuscarComSort" Wait
+Try actualizar(ListBoxResultado)
+
+End
+
+Public Sub ButtonBuscar2_Click()
+
+  Shell "~/.gradio/bin/GR_BuscarComPrint.sh"
+
+End

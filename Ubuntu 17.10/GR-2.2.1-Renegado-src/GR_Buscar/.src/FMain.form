@@ -1,0 +1,40 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(6.25,12.5,69,66)
+  Text = ("G-Radio_Buscar")
+  Icon = Picture["gradio.png"]
+  Resizable = False
+  { Menu1 Menu
+    Text = ("Menu1")
+    Picture = Picture["icon:/32/volume"]
+    Visible = False
+    Shortcut = "C"
+    { CUE2 Menu
+      Text = ("CUE")
+      Picture = Picture["icon:/32/volume"]
+      Shortcut = "Alt+C"
+    }
+  }
+  { TextBoxBuscar TextBox
+    MoveScaled(7,1,61,5)
+  }
+  { Button1 Button
+    MoveScaled(1,1,6,5)
+    Picture = Picture["icon:/32/find"]
+  }
+  { HBox1 HBox
+    MoveScaled(1,6,67,60)
+    { ListBoxResultado ListBox
+      MoveScaled(0,-6,67,65)
+      Background = &HDFFFEF&
+      Foreground = Color.Black
+      ToolTip = ("Resultados de la búsqueda")
+      Expand = True
+      PopupMenu = "Menu1"
+      Mode = Select.None
+      ScrollBar = Scroll.Both
+      Sorted = True
+    }
+  }
+}

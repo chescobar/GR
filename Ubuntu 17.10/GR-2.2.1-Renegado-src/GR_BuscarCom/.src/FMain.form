@@ -1,0 +1,55 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,114,80)
+  Background = &HBFBFBF&
+  Text = ("GR Revisar Pautaje")
+  Icon = Picture["gradio.png"]
+  { Copy Menu
+    Text = ("Copy")
+    Visible = False
+    { Copiar Menu
+      Text = ("Copiar")
+      Picture = Picture["icon:/32/copy"]
+      Shortcut = "Ctrl+C"
+    }
+  }
+  { Frame1 Frame
+    MoveScaled(55,0,49,10)
+    Text = ("Categoría")
+    { Comercial RadioButton
+      MoveScaled(2,4,13,5)
+      Text = ("Comerciales")
+      Value = True
+    }
+    { Evento RadioButton
+      MoveScaled(17,4,10,5)
+      Text = ("Eventos")
+    }
+    { Espera RadioButton
+      MoveScaled(28,4,20,5)
+      Text = ("Eventos en Espera")
+    }
+  }
+  { ButtonBuscar Button
+    MoveScaled(1,3,8,7)
+    Background = &HBFBFBF&
+    Picture = Picture["icon:/32/find"]
+  }
+  { TextBoxBuscar TextBox
+    MoveScaled(9,3,45,7)
+    Background = &HEEEEEE&
+  }
+  { ListBoxResultado ListBox
+    MoveScaled(1,11,112,68)
+    Background = &HEEE9D0&
+    PopupMenu = "Copy"
+    Mode = Select.None
+    ScrollBar = Scroll.Both
+  }
+  { ButtonBuscar2 Button
+    MoveScaled(105,3,8,7)
+    Background = &HBFBFBF&
+    Picture = Picture["icon:/32/printer"]
+  }
+}

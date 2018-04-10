@@ -1,0 +1,393 @@
+' Gambas class file
+
+
+' Gambas class file
+
+Public ColorContraste As Color
+
+Public Sub _new()
+
+
+
+End
+
+Public Sub Form_Open()
+ Try actualizarLabel6(Label6)
+ Try actualizarLabel7(Label7)
+ Try actualizarLabel8(Label8)
+ Try actualizarLabel9(Label9)
+ Try actualizarLabel10(Label10)
+ Try actualizarLabel11(Label11)
+ Try actualizarLabel12(Label12)
+ Try actualizarLabel13(Label13)
+ Try actualizarLabel14(Label14)
+Try actualizarLabel15(Label15)
+Try actualizarLabel16(Label16)
+Try actualizarLabel17(Label17)
+Try actualizarLabel18(Label18)
+Try actualizarLabel19(Label19)
+Try actualizarLabel20(Label20)
+Try actualizarLabel21(Label21)
+Try actualizarLabel22(Label22)
+Try actualizarLabel23(Label23)
+End
+
+          Public Sub actualizarLabel6(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/mezcla"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          
+          End
+          
+                    Public Sub actualizarLabel7(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/mix.txt"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          
+          End
+          
+                    Public Sub actualizarLabel8(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/pisador"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          
+          End
+          
+          Public Sub actualizarLabel9(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/disparo"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          
+          End
+          
+          Public Sub actualizarLabel10(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/pisadorname"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          
+          End
+          
+          Public Sub actualizarLabel11(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/radio"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel12(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/twidge"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel13(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/espacio"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel14(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/fundidocomin"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+
+          Public Sub actualizarLabel15(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/fundidocomout"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+
+          Public Sub actualizarLabel16(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/fundidocomerciales"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel17(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/tvestado"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel18(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/tvdesplazamiento"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel19(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/teletexto"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel20(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/tvlogo"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel21(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/logo.name"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel22(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/mascara.name"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+          
+          Public Sub actualizarLabel23(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/devcue"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+
+  Public Sub CheckBox2_Click()
+  Shell "~/.gradio/bin/mezcla.sh" Wait
+        Try actualizarLabel6(Label6)
+End
+
+
+Public Sub CheckBox1_Click()
+
+  Shell "~/.gradio/bin/pisadorbutton.sh" Wait
+          Try actualizarLabel8(Label8)
+  End
+
+
+
+Public Sub Button22_Click()
+
+  Shell "~/.gradio/data/panel/cargapisador.sh" Wait
+  Try actualizarLabel10(Label10)
+End
+
+Public Sub Button23_Click()
+
+  Shell "~/.gradio/bin/disparo.sh" Wait
+  Try actualizarLabel9(Label9)
+
+End
+
+Public Sub CheckBox3_Click()
+
+       Shell "~/.gradio/bin/anuncio.sh" Wait
+       Try actualizarLabel13(Label13)
+
+
+End
+
+Public Sub Label1_MouseDown()
+
+  
+
+End
+
+Public Sub Button36_Click()
+
+  Shell "~/.gradio/bin/fundido.sh" Wait
+          Try actualizarLabel7(Label7)
+
+End
+
+Public Sub Button1_Click()
+
+    Shell "~/.gradio/bin/nombreradio.sh" Wait
+     Try actualizarLabel11(Label11)
+
+End
+
+
+Public Sub CheckBox4_Click()
+     Shell "~/.gradio/bin/tv.sh" Wait
+     Try actualizarLabel17(Label17)
+
+End
+
+Public Sub Button2_Click()
+
+  Shell "~/.gradio/bin/tvdesplazamiento.sh" Wait
+  Try actualizarLabel18(Label18)
+
+End
+
+Public Sub Button4_Click()
+
+  Shell "~/.gradio/bin/fundidocomin.sh" Wait
+  Try actualizarLabel14(Label14)
+
+End
+
+Public Sub Button3_Click()
+
+    Shell "~/.gradio/bin/fundidocomout.sh" Wait
+    Try actualizarLabel15(Label15)
+End
+
+Public Sub Button6_Click()
+
+    Shell "~/.gradio/bin/fundidocomerciales.sh" Wait
+    Try actualizarLabel16(Label16)
+End
+
+Public Sub Button5_Click()
+
+   Shell "~/.gradio/bin/Teletexto_GR.gambas"
+
+End
+
+Public Sub CheckBox5_Click()
+      Shell "~/.gradio/bin/tvteletexto.sh" Wait
+      Try actualizarLabel19(Label19)
+End
+
+
+Public Sub CheckBox6_Click()
+
+       Shell "~/.gradio/bin/tvlogo.sh" Wait
+       Try actualizarLabel20(Label20)
+
+End
+
+Public Sub Button7_Click()
+
+  Shell "~/.gradio/bin/tvlogoselec.sh" Wait
+  Try actualizarLabel21(Label21)
+
+End
+
+
+Public Sub CheckBox7_Click()
+
+       Shell "~/.gradio/bin/twidge.sh" Wait
+       Try actualizarLabel12(Label12)
+End
+
+
+Public Sub Button8_Click()
+
+         Shell "~/.gradio/bin/mascara.sh" Wait
+         Try actualizarLabel22(Label22)
+
+End
+
+
+
+Public Sub Button9_Click()
+
+           Shell "echo -ao pulse::0 > ~/.gradio/data/devcue" Wait
+           
+         Try actualizarLabel23(Label23)
+
+End
+
+Public Sub Button10_Click()
+
+             Shell "echo -ao pulse::1 > ~/.gradio/data/devcue" Wait
+           
+         Try actualizarLabel23(Label23)
+
+End
+
+Public Sub Button11_Click()
+
+             Shell "echo -ao pulse::2 > ~/.gradio/data/devcue" Wait
+           
+         Try actualizarLabel23(Label23)
+
+End
+
+Public Sub Button12_Click()
+
+               Shell "echo -ao pulse::3 > ~/.gradio/data/devcue" Wait
+                        Try actualizarLabel23(Label23)
+
+End
+
+Public Sub Button13_Click()
+
+               Shell "echo -ao pulse::4 > ~/.gradio/data/devcue" Wait
+                        Try actualizarLabel23(Label23)
+
+End
+
+Public Sub Button14_Click()
+
+  Shell "cue ~/.gradio/data/panel/Time/tono-hora.ogg"
+
+End

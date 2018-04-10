@@ -1,0 +1,15 @@
+# Gambas Project File 3.0
+# Compiled with Gambas 3.9.2
+Title=G Radio V-2.2 Renegado!!
+Startup=FMain
+Version=0.0.109
+Component=gb.image
+Component=gb.qt5
+Component=gb.form
+Component=gb.settings
+Component=gb.net
+Component=gb.net.curl
+TabSize=2
+Translate=1
+Language=es
+Packager=1

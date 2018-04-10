@@ -1,0 +1,6424 @@
+' Gambas class file
+
+' Gambas class file
+
+'
+' gradio
+' Código para mostrar Cancion reproduciendose, lista de comerciales y lista de Canciones de gradio  Basado en el programa de Julio Sánchez Berro
+' Interfaz y botones adicionales por Charles Escobar 
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+''Vumeter Gracias al aporte de Ingo Beckert - <ingo@gambas-buch.de> 
+Private $bStop As Boolean
+Public iSize As Integer = 512
+Public hVol As Float
+Private $hPic As Picture
+
+Library "libasound:2"
+
+Private Const SND_PCM_STREAM_CAPTURE As Byte = 1
+Private Const SND_PCM_STREAM_PLAYBACK As Byte = 1 
+Private Const SND_PCM_FORMAT_S16_LE As Byte = 2
+Private Const SND_PCM_ACCESS_RW_INTERLEAVED As Byte = 3
+
+' int snd_pcm_open(snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode)
+Private Extern snd_pcm_open(pcm As Pointer, name As String, streamInt As Integer, mode As Integer) As Integer
+
+' int snd_pcm_set_params(snd_pcm_t * pcm, snd_pcm_format_t format, snd_pcm_access_t access, unsigned int channels, unsigned int rate, int soft_resample, unsigned Int latency)
+Private Extern snd_pcm_set_params(pcm As Pointer, formatInt As Integer, accessInt As Integer, channels As Integer, rate As Integer, soft_resample As Integer, latency As Integer) As Integer
+
+' snd_pcm_sframes_t snd_pcm_readi (snd_pcm_t *pcm, void *buffer, snd_pcm_uframes_t size)
+Private Extern snd_pcm_readi(pcm As Pointer, buffer As Short[], sizeInt As Integer) As Integer
+
+' const char * snd_strerror (int errnum)
+Private Extern snd_strerror(errnum As Integer) As String
+    
+' snd_pcm_close(snd_pcm_t *pcm)
+Private Extern snd_pcm_close(pcm As Pointer)
+''Vumeter-end
+'Socket
+Private $iId As Integer
+'Socket-end
+
+Public Sub Form_Open()
+Dim Fechas As Date
+'Dim X As Integer
+ 
+ ''Vumeter
+'Dim phandle As Pointer
+'Dim sdevice As String = "default"
+'Dim err, fc, iVol, i As Integer
+'Dim ichannel As Byte
+'Dim abuffer As New Short[iSize]
+
+   'Me.Center
+PrepareDraw()
+btnStart.Value = True
+''Vumeter-end
+
+
+   With Me
+   .Width = Desktop.Width
+   .Height = Desktop.Height
+   End With
+   
+   
+   With TextLabel1
+   .Width = 0.089 * Desktop.Width
+   .Height = 23 / 658 * Desktop.Height
+   .Y = 1 / 658 * Desktop.Height
+   End With
+   
+         With LabelCancion
+   .Width = 332 / 1022 * Desktop.Width
+   .X = 95 / 1022 * Desktop.Width
+   .Height = 23 / 658 * Desktop.Height
+   .Y = 1 / 658 * Desktop.Height
+  ' .Height = Desktop.Height
+   End With
+   
+   With LabelComercial
+   .Width = 332 / 1022 * Desktop.Width
+   .X = 95 / 1022 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .Y = 25 / 658 * Desktop.Height
+  ' .Height = Desktop.Height
+   End With
+   
+   With TextLabel2
+   .Width = 0.089 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .Y = 25 / 658 * Desktop.Height
+   End With
+   
+   With DrawingArea1
+   .Width = 91 / 1022 * Desktop.Width
+   .Height = 49 / 658 * Desktop.Height
+   .X = 427 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With LabelCancion7
+   .Width = 84 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 429 / 1022 * Desktop.Width
+   .Y = 14 / 658 * Desktop.Height  
+   End With
+   
+   With Label6
+   .Width = 70 / 1022 * Desktop.Width
+   .Height = 14 / 658 * Desktop.Height
+   .X = 14 / 1022 * Desktop.Width
+   .Y = 35 / 658 * Desktop.Height  
+   End With
+   
+      With PictureBox2
+   .Width = 35 / 1022 * Desktop.Width
+   .Height = 35 / 658 * Desktop.Height
+   .X = 973 / 1022 * Desktop.Width
+   .Y = 7 / 658 * Desktop.Height
+   End With
+   
+    With TextLabel3 'G Radio
+   .Width = 56 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 900 / 1022 * Desktop.Width
+   .Y = 1 / 658 * Desktop.Height
+   End With
+   
+   With Radio 'Radio Name
+   .Width = 100 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 900 / 1022 * Desktop.Width
+   .Y = 35 / 658 * Desktop.Height
+   End With
+   
+   
+   With Label3 'Web page
+   .Width = 140 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 885 / 1022 * Desktop.Width
+   .Y = 10 / 658 * Desktop.Height
+   End With
+   
+   With PictureBox1
+   .Width = 56 / 1022 * Desktop.Width
+   .Height = 56 / 658 * Desktop.Height
+   .X = 840 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+      With LabelA5
+   .Width = 84 / 1022 * Desktop.Width
+   .Height = 14 / 658 * Desktop.Height
+   .X = 742 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label10
+   .Width = 231 / 1022 * Desktop.Width
+   .Height = 14 / 658 * Desktop.Height
+   .X = 602 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+      With LabelA8
+   .Width = 77 / 1022 * Desktop.Width
+   .Height = 35 / 658 * Desktop.Height
+   .X = 756 / 1022 * Desktop.Width
+   .Y = 14 / 658 * Desktop.Height
+   End With
+   
+   With LabelA7
+   .Width = 77 / 1022 * Desktop.Width
+   .Height = 35 / 658 * Desktop.Height
+   .X = 679 / 1022 * Desktop.Width
+   .Y = 14 / 658 * Desktop.Height
+   End With
+   
+   With LabelA6
+   .Width = 77 / 1022 * Desktop.Width
+   .Height = 35 / 658 * Desktop.Height
+   .X = 602 / 1022 * Desktop.Width
+   .Y = 14 / 658 * Desktop.Height
+   End With
+   
+   With Label7
+   .Width = 77 / 1022 * Desktop.Width
+   .Height = 14 / 658 * Desktop.Height
+   .X = 618 / 1022 * Desktop.Width
+   .Y = 35 / 658 * Desktop.Height
+   End With
+   
+   With Label8
+   .Width = 77 / 1022 * Desktop.Width
+   .Height = 14 / 658 * Desktop.Height
+   .X = 695 / 1022 * Desktop.Width
+   .Y = 35 / 658 * Desktop.Height
+   End With
+   
+   With Label9
+   .Width = 77 / 1022 * Desktop.Width
+   .Height = 14 / 658 * Desktop.Height
+   .X = 780 / 1022 * Desktop.Width
+   .Y = 35 / 658 * Desktop.Height
+   End With
+   
+    With reloj
+   .Width = 84 / 1022 * Desktop.Width
+   .Height = 49 / 658 * Desktop.Height
+   .X = 518 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With label5
+   .Width = 42 / 1022 * Desktop.Width
+   .Height = 14 / 658 * Desktop.Height
+   .X = 550 / 1022 * Desktop.Width
+   .Y = 35 / 658 * Desktop.Height
+   End With
+   
+   With TabStrip1
+   .Width = 1008 / 1022 * Desktop.Width
+   .Height = 77 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 575 / 658 * Desktop.Height
+   End With
+   
+   With Label11
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label12
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label13
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label14
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label15
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label16
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+    With Label18
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label19
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label20
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label21
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label22
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label17
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   'Panel 2
+   '
+   With Label23
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label27
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label31
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label24
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label28
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label32
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+    With Label26
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label30
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label34
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label25
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label29
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label33
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   'Panel 3
+   With Label35
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label39
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label43
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label36
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label44
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label40
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   
+   
+    With Label38
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label42
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label46
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label37
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label41
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label45
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   
+   'panel 4
+   'Tupla1
+   With Label47
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label51
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label55
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label48
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label52
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label56
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With   
+   
+   'Segunda tupla
+     
+    With Label50
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label49
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label58
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label54
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label53
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label57
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   
+   'Panel 5
+   'Tupla1
+   With Label59
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label63
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label67
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label62
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label66
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label70
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With   
+   
+   'Segunda tupla
+     
+    With Label60
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label64
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label68
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label61
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label65
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label69
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   
+   'panel 6
+      'Tupla1
+   With Label71
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label75
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label79
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label74
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label78
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label82
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With   
+   
+   'Segunda tupla
+     
+    With Label72
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label76
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label80
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label73
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label77
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label81
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   
+   'panel 7
+   '   'Tupla1
+   With Label83
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label87
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label91
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label86
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label90
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label94
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With   
+   
+   'Segunda tupla
+     
+    With Label84
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label88
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label92
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label85
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label89
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label93
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   
+   'panel 8
+   '   'Tupla1
+   With Label95
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label99
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label103
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label98
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label102
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label106
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With   
+   
+   'Segunda tupla
+     
+    With Label96
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label100
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label104
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label97
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label101
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label105
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   
+   'panel 9
+   '   'Tupla1
+   With Label107
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label111
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label115
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label110
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label114
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label118
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With   
+   
+   'Segunda tupla
+     
+    With Label108
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label112
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label116
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label109
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label113
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label117
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   
+   'panel 10
+   '   'Tupla1
+   With Label119
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label123
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label127
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label122
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label126
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label130
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With   
+   
+   'Segunda tupla
+     
+    With Label120
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label124
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label128
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label121
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label125
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label129
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 837 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With  
+   '''''''''''''''''''''''''''''''''''''''''''
+   
+   'panel 11
+   '   'Tupla1
+   With Label131
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label133
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label135
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label137
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With Label139
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+     
+   
+   'Segunda tupla
+     
+    With Label132
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With   
+   
+   With Label134
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 169 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label136
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 336 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label138
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 503 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+   
+   With Label140
+   .Width = 167 / 1022 * Desktop.Width
+   .Height = 21 / 658 * Desktop.Height
+   .X = 670 / 1022 * Desktop.Width
+   .Y = 21 / 658 * Desktop.Height
+   End With
+
+   
+   '''''''''''''''''''''''''''''''''''''''''''
+   
+   With Panel3
+   .Width = 406 / 1022 * Desktop.Width
+   .Height = 126 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 448 / 658 * Desktop.Height
+   End With
+   
+   With Panel6
+   .Width = 406 / 1022 * Desktop.Width
+   .Height = 126 / 658 * Desktop.Height
+   .X = 417 / 1022 * Desktop.Width
+   .Y = 448 / 658 * Desktop.Height
+   End With
+   
+   With Panel8
+   .Width = 182 / 1022 * Desktop.Width
+   .Height = 126 / 658 * Desktop.Height
+   .X = 827 / 1022 * Desktop.Width
+   .Y = 448 / 658 * Desktop.Height
+   End With
+   
+   With VSplit2
+   .Width = 707 / 1022 * Desktop.Width
+   .Height = 392 / 658 * Desktop.Height
+   .X = 301 / 1022 * Desktop.Width
+   .Y = 56 / 658 * Desktop.Height
+   End With
+   
+   'With FileChooser1
+   '.Width = 294 / 1022 * Desktop.Width
+   '.Height = 392 / 658 * Desktop.Height
+   '.X = 7 / 1022 * Desktop.Width
+   '.Y = 56 / 658 * Desktop.Height
+   'End With
+   
+   With HSplit4
+   .Width = 294 / 1022 * Desktop.Width
+   .Height = 370 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+     With ListBoxResultado
+   .Width = 290 / 1022 * Desktop.Width
+   .Height = 340 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 30 / 658 * Desktop.Height
+   End With
+
+     With TextBoxBuscar
+   .Width = 260 / 1022 * Desktop.Width
+   .Height = 27 / 658 * Desktop.Height
+   .X = 30 / 1022 * Desktop.Width
+   .Y = 2 / 658 * Desktop.Height
+   End With
+
+     With Button9
+   .Width = 27 / 1022 * Desktop.Width
+   .Height = 27 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 2 / 658 * Desktop.Height
+   End With
+
+  'With HBox1
+   '.Width = 288 / 1022 * Desktop.Width
+   '.Height = 340 / 658 * Desktop.Height
+   '.X = 4 / 1022 * Desktop.Width
+   '.Y = 35 / 658 * Desktop.Height
+   'End With
+   
+   
+   
+   
+      With TabStrip4
+   .Width = 294 / 1022 * Desktop.Width
+   .Height = 392 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 56 / 658 * Desktop.Height
+   End With
+   
+   With DirView1
+   .Width = 147 / 1022 * Desktop.Width
+   .Height = 392 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 56 / 658 * Desktop.Height
+   End With
+   
+   With FileView1
+   .Width = 147 / 1022 * Desktop.Width
+   .Height = 392 / 658 * Desktop.Height
+   .X = 154 / 1022 * Desktop.Width
+   .Y = 56 / 658 * Desktop.Height
+   End With
+    
+   With Panel5
+   .Width = 707 / 1022 * Desktop.Width
+   .Height = 400 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   
+   
+   With HSplit1
+   .Width = 707 / 1022 * Desktop.Width
+   .Height = 392 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   With HSplit5
+   .Width = 300 / 1022 * Desktop.Width
+   .Height = 20 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 360 / 658 * Desktop.Height
+   End With
+   
+   With Panel2
+   .Width = 413 / 1022 * Desktop.Width
+   .Height = 231 / 658 * Desktop.Height
+   .X = 350 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   'With Panel1
+   '.Width = 413 / 1022 * Desktop.Width
+   '.Height = 385 / 658 * Desktop.Height
+   '.X = 7 / 1022 * Desktop.Width
+   '.Y = 0 / 658 * Desktop.Height
+   'End With
+   
+   'With Label1
+   '.Width = 434 / 1022 * Desktop.Width
+   '.Height = 28 / 658 * Desktop.Height
+   '.X = 28 / 1022 * Desktop.Width
+   '.Y = 0 / 658 * Desktop.Height
+   'End With
+   
+   With ListBoxParrillaRaiz
+   .Width = 413 / 1022 * Desktop.Width
+   .Height = 385 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   
+ 
+  With TabStrip3
+   .Width = 413 / 1022 * Desktop.Width
+   .Height = 385 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+ 
+    With LabelCancion16
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 326 / 658 * Desktop.Height
+   End With
+ 
+ 
+    With LabelCancion15
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 302 / 658 * Desktop.Height
+   End With
+ 
+ 
+    With LabelCancion14
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 278 / 658 * Desktop.Height
+   End With
+ 
+ 
+    With LabelCancion13
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 254 / 658 * Desktop.Height
+   End With
+ 
+   
+   With LabelCancion12
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 230 / 658 * Desktop.Height
+   End With
+   
+   With LabelCancion11
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 24 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 205 / 658 * Desktop.Height
+   End With
+   
+   
+   With LabelCancion10
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 180 / 658 * Desktop.Height
+   End With
+   
+   
+   With LabelCancion9
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 155 / 658 * Desktop.Height
+   End With
+   
+   
+   With LabelCancion8
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 130 / 658 * Desktop.Height
+   End With
+
+   
+   With LabelCancion6
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 105 / 658 * Desktop.Height
+   End With
+   
+   With LabelCancion5
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 80 / 658 * Desktop.Height
+   End With
+   
+   With LabelCancion4
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 55 / 658 * Desktop.Height
+   End With
+   
+   With LabelCancion3
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 30 / 658 * Desktop.Height
+   End With
+   
+   With LabelCancion2
+   .Width = 698 / 1022 * Desktop.Width
+   .Height = 25 / 658 * Desktop.Height
+   .X = 2 / 1022 * Desktop.Width
+   .Y = 5 / 658 * Desktop.Height
+   End With
+   
+   With TabStrip2
+   .Width = 707 / 1022 * Desktop.Width
+   .Height = 385 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 28 / 658 * Desktop.Height
+   End With
+   
+   With ListBoxComerciales
+   .Width = 595 / 1022 * Desktop.Width
+   .Height = 345 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   
+   
+   With ListBoxComerciales4
+   .Width = 595 / 1022 * Desktop.Width
+   .Height = 361 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   
+    With ListBoxPautaje
+   .Width = 595 / 1022 * Desktop.Width
+   .Height = 335 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 25 / 658 * Desktop.Height
+   End With
+   
+    With ButtonPautaje
+   .Width = 180 / 1022 * Desktop.Width
+   .Height = 20 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 0 / 658 * Desktop.Height
+   End With
+   
+   
+   With HSplit2
+   .Width = 329 / 1022 * Desktop.Width
+   .Height = 20 / 658 * Desktop.Height
+   .X = 1 / 1022 * Desktop.Width
+   .Y = 339 / 658 * Desktop.Height
+   End With
+      
+   With drwVol
+   .Width = 9 / 1022 * Desktop.Width
+   .Height = 602 / 658 * Desktop.Height
+   .X = 0 / 1022 * Desktop.Width
+   .Y = 1 / 658 * Desktop.Height
+   End With
+   
+     With PictureVULED
+   .Width = 14 / 1022 * Desktop.Width
+   .Height = 602 / 658 * Desktop.Height
+   .X = 1 / 1022 * Desktop.Width
+   .Y = 1 / 658 * Desktop.Height
+   End With
+   
+        With PanelVUMETER
+   .Width = 16 / 1022 * Desktop.Width
+   .Height = 602 / 658 * Desktop.Height
+   .X = 1012 / 1022 * Desktop.Width
+   .Y = 52 / 658 * Desktop.Height
+   End With
+   
+   
+   
+   With TabStrip1
+   'TabStrip1.ColorPalette = Black
+   .Width = 1000 / 1022 * Desktop.Width
+   .Height = 75 / 658 * Desktop.Height
+   .X = 6 / 1022 * Desktop.Width
+   .Y = 560 / 658 * Desktop.Height
+   End With
+   
+ 
+
+
+   
+TimerActualizar.Trigger()
+TimerActualizar.Start()
+   Shell "~/.gradio/bin/inicio.sh"
+   Shell "~/.gradio/bin/auto.sh"
+   
+   Fechas = Date
+LabelA5.Caption = (Format(Fechas, "dd/mm/yyyy"))
+Print Format(Now, "m/d/yy")
+ Shell "~/.gradio/bin/visor-pauta.sh"
+Try actualizarListaPautaje(ListBoxPautaje)
+Try actualizarLabel11(Label11)
+Try actualizarLabel12(Label12)
+Try actualizarLabel13(Label13)
+Try actualizarLabel14(Label14)
+Try actualizarLabel15(Label15)
+Try actualizarLabel16(Label16)
+Try actualizarLabel17(Label17)
+Try actualizarLabel18(Label18)
+Try actualizarLabel19(Label19)
+Try actualizarLabel20(Label20)
+Try actualizarLabel21(Label21)
+Try actualizarLabel22(Label22)
+Try actualizarLabel23(Label23)
+Try actualizarLabel24(Label24)
+Try actualizarLabel25(Label25)
+Try actualizarLabel26(Label26)
+Try actualizarLabel27(Label27)
+Try actualizarLabel28(Label28)
+Try actualizarLabel29(Label29)
+Try actualizarLabel30(Label30)
+Try actualizarLabel31(Label31)
+Try actualizarLabel32(Label32)
+Try actualizarLabel33(Label33)
+Try actualizarLabel34(Label34)
+Try actualizarLabel35(Label35)
+Try actualizarLabel36(Label36)
+Try actualizarLabel37(Label37)
+Try actualizarLabel38(Label38)
+Try actualizarLabel39(Label39)
+Try actualizarLabel40(Label40)
+Try actualizarLabel41(Label41)
+Try actualizarLabel42(Label42)
+Try actualizarLabel43(Label43)
+Try actualizarLabel44(Label44)
+Try actualizarLabel45(Label45)
+Try actualizarLabel46(Label46)
+Try actualizarLabel47(Label47)
+Try actualizarLabel48(Label48)
+Try actualizarLabel49(Label49)
+Try actualizarLabel50(Label50)
+Try actualizarLabel51(Label51)
+Try actualizarLabel52(Label52)
+Try actualizarLabel53(Label53)
+Try actualizarLabel54(Label54)
+Try actualizarLabel55(Label55)
+Try actualizarLabel56(Label56)
+Try actualizarLabel57(Label57)
+Try actualizarLabel58(Label58)
+Try actualizarLabel59(Label59)
+Try actualizarLabel60(Label60)
+Try actualizarLabel61(Label61)
+Try actualizarLabel62(Label62)
+Try actualizarLabel63(Label63)
+Try actualizarLabel64(Label64)
+Try actualizarLabel65(Label65)
+Try actualizarLabel66(Label66)
+Try actualizarLabel67(Label67)
+Try actualizarLabel68(Label68)
+Try actualizarLabel69(Label69)
+Try actualizarLabel70(Label70)
+Try actualizarLabel71(Label71)
+Try actualizarLabel72(Label72)
+Try actualizarLabel73(Label73)
+Try actualizarLabel74(Label74)
+Try actualizarLabel75(Label75)
+Try actualizarLabel76(Label76)
+Try actualizarLabel77(Label77)
+Try actualizarLabel78(Label78)
+Try actualizarLabel79(Label79)
+Try actualizarLabel80(Label80)
+Try actualizarLabel81(Label81)
+Try actualizarLabel82(Label82)
+Try actualizarLabel83(Label83)
+Try actualizarLabel84(Label84)
+Try actualizarLabel85(Label85)
+Try actualizarLabel86(Label86)
+Try actualizarLabel87(Label87)
+Try actualizarLabel88(Label88)
+Try actualizarLabel89(Label89)
+Try actualizarLabel90(Label90)
+Try actualizarLabel91(Label91)
+Try actualizarLabel92(Label92)
+Try actualizarLabel93(Label93)
+Try actualizarLabel94(Label94)
+Try actualizarLabel95(Label95)
+Try actualizarLabel96(Label96)
+Try actualizarLabel97(Label97)
+Try actualizarLabel98(Label98)
+Try actualizarLabel99(Label99)
+Try actualizarLabel100(Label100)
+Try actualizarLabel101(Label101)
+Try actualizarLabel102(Label102)
+Try actualizarLabel103(Label103)
+Try actualizarLabel104(Label104)
+Try actualizarLabel105(Label105)
+Try actualizarLabel106(Label106)
+Try actualizarLabel107(Label107)
+Try actualizarLabel108(Label108)
+Try actualizarLabel109(Label109)
+Try actualizarLabel110(Label110)
+Try actualizarLabel111(Label111)
+Try actualizarLabel112(Label112)
+Try actualizarLabel113(Label113)
+Try actualizarLabel114(Label114)
+Try actualizarLabel115(Label115)
+Try actualizarLabel116(Label116)
+Try actualizarLabel117(Label117)
+Try actualizarLabel118(Label118)
+Try actualizarLabel119(Label119)
+Try actualizarLabel120(Label120)
+Try actualizarLabel121(Label121)
+Try actualizarLabel122(Label122)
+Try actualizarLabel123(Label123)
+Try actualizarLabel124(Label124)
+Try actualizarLabel125(Label125)
+Try actualizarLabel126(Label126)
+Try actualizarLabel127(Label127)
+Try actualizarLabel128(Label128)
+Try actualizarLabel129(Label129)
+Try actualizarLabel130(Label130)
+
+Try actualizarLabel131(Label131)
+Try actualizarLabel132(Label132)
+Try actualizarLabel133(Label133)
+Try actualizarLabel134(Label134)
+Try actualizarLabel135(Label135)
+Try actualizarLabel136(Label136)
+Try actualizarLabel137(Label137)
+Try actualizarLabel138(Label138)
+Try actualizarLabel139(Label139)
+Try actualizarLabel140(Label140)
+Try actualizarLabel141(Label141)
+Try updateListBoxComerciales4(ListBoxComerciales4)   
+GetFileView()
+DirView1.Current = User.home & "/G Radio"
+FileView1.Current = FileView1.Current
+FileView1.Dir = DirView1.Current
+
+Socket_Listen.Value = True
+   
+End
+
+Public Sub Setting()
+ Settings["LabelCancion2.Background"] = Me.LabelCancion2.Background
+ 'Settings["Window/Top"] = Me.Top
+ End
+ 
+
+Public Sub Form_Close()
+Dim respuesta As Integer
+    settings.write(Me)
+  respuesta = Message.Question("¿Advertencia: Deseas Cerrar G Radio?", "Cerrar", "Cancelar")
+  If respuesta = 2 Then
+    Stop Event
+ 
+    Else
+    Shell "~/.gradio/bin/detener.sh"
+  Endif
+  $bStop = False
+     MyServerSocket.Close()
+     Print "Bye bye"
+  
+End
+
+
+
+Public Sub TimerActualizar_Timer()
+Dim Fechas As Date
+  'actualiza los datos contenidos en los archivos
+reloj.Text = Time(Hour(Now), Minute(Now), Second(Now))
+
+Try actualizarCancion(LabelCancion)
+Try actualizarCancion7(LabelCancion7)
+Try actualizarRadio(Radio)
+Try actualizarCartucho1(LabelCancion2)
+Try actualizarCartucho2(LabelCancion3)
+Try actualizarCartucho3(LabelCancion4)
+Try actualizarCartucho4(LabelCancion5)
+Try actualizarCartucho5(LabelCancion6)
+Try actualizarCartucho6(LabelCancion8)
+Try actualizarCartucho7(LabelCancion9)
+Try actualizarCartucho8(LabelCancion10)
+Try actualizarCartucho9(LabelCancion11)
+Try actualizarCartucho10(LabelCancion12)
+Try actualizarCartucho11(LabelCancion13)
+Try actualizarCartucho12(LabelCancion14)
+Try actualizarCartucho13(LabelCancion15)
+Try actualizarCartucho14(LabelCancion16)
+'Try actualizarCartucho14(LabelCancion14)
+Try actualizarComercial(LabelComercial)
+Try actualizarListaComerciales(ListBoxComerciales)
+'Try actualizarListaComerciales2(ListBoxComerciales4)
+'Try actualizarListaComerciales3(ListBoxComerciales3)
+Try actualizarLabelA6(LabelA6)
+Try actualizarLabelA7(LabelA7)
+Try actualizarLabelA8(LabelA8)
+   Fechas = Date
+LabelA5.Caption = (Format(Fechas, "dd/mm/yyyy"))
+'Print Format(Now, "m/d/yy")
+'Configuracion.FijarColor()
+settings.read(Me)
+End
+
+Public Sub ColorButtonContraste_Change()
+  
+  FMain.FijarColor()
+
+End
+
+Public Sub FijarColor()
+
+  'colores
+ ' ListBoxComerciales.Background = HDFDFA7
+LabelCancion2.Background = ColorButtonContraste.Color
+LabelCancion4.Background = ColorButtonContraste.Color
+LabelCancion6.Background = Settings[LabelCancion6.Background, ColorButtonContraste.Color]
+LabelCancion9.Background = Settings[LabelCancion9.Background, ColorButtonContraste.Color]
+LabelCancion11.Background = Settings[LabelCancion11.Background, ColorButtonContraste.Color]
+LabelCancion13.Background = Settings[LabelCancion13.Background, ColorButtonContraste.Color]
+LabelCancion15.Background = Settings[LabelCancion15.Background, ColorButtonContraste.Color]
+ListBoxComerciales.Background = ColorButtonContraste.Color
+Settings[LabelCancion2.Background] = ColorButtonContraste.Color
+Settings[LabelCancion4.Background] = ColorButtonContraste.Color
+Settings[LabelCancion6.Background] = ColorButtonContraste.Color
+Settings[LabelCancion9.Background] = ColorButtonContraste.Color
+Settings[LabelCancion11.Background] = ColorButtonContraste.Color
+Settings[LabelCancion13.Background] = ColorButtonContraste.Color
+Settings[LabelCancion15.Background] = ColorButtonContraste.Color
+Settings[ListBoxComerciales.Background] = ColorButtonContraste.Color
+
+End
+
+
+
+Public Sub actualizarLabelA6(l As Label)
+Dim ruta As String
+ 'lee archivo
+Try ruta = User.home & "/.gradio/data/tmp/tiempocomerciales"
+  'Print "ruta"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+
+End
+
+Public Sub actualizarLabelA7(l As Label)
+
+Dim ruta As String
+ 'lee archivo
+Try ruta = User.home & "/.gradio/data/tmp/porcintercultural"
+  'Print "ruta"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+
+End
+
+Public Sub actualizarLabelA8(l As Label)
+
+Dim ruta As String
+ 'lee archivo
+Try ruta = User.home & "/.gradio/data/tmp/porcnacional"
+  'Print "ruta"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+
+End
+
+Public Sub actualizarCancion(l As Label)
+
+Dim ruta As String
+ 'lee archivo
+Try ruta = User.home & "/.gradio/data/tmp/currentsong.txt"
+  'Print "ruta"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+
+End
+
+Public Sub actualizarCancion7(l As Label)
+
+Dim ruta As String
+ 'lee archivo
+Try ruta = User.home & "/.gradio/data/tmp/avance"
+  'Print "ruta"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+
+End
+
+Public Sub actualizarRadio(l As Label)
+
+Dim ruta As String
+ 'lee archivo
+Try ruta = User.home & "/.gradio/data/tmp/radio"
+  'Print "ruta"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+
+End
+
+Public Sub actualizarCartucho1(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho1"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho2(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho2"
+ 'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho3(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho3"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho4(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho4"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho5(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho5"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho6(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho6"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho7(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho7"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho8(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho8"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho9(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho9"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho10(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho10"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho11(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho11"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho12(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho12"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho13(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho13"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho14(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho14"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho15(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho15"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+Public Sub actualizarCartucho16(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/cartucho16"
+  'Print "ruta"
+  'If Error Then Return
+  Try l.text = File.Load(ruta)
+  'If Error Then Return
+
+End
+
+
+Public Sub actualizarListaPautaje(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/visor-pauta"
+If Error Then Return
+ cargaContenidoPautaje(ruta, l)
+
+End
+
+Private Sub cargaContenidoPautaje(ruta As String, l As ListBox)
+
+  Dim linea As New String[]
+  Dim a As Integer
+ ' Dim contenido As String
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 1
+    'linea.Foreground = Color.red
+    'l.Add(a) 
+    l.Add(linea[a])
+  Next
+End
+
+
+
+
+
+Public Sub actualizarComercial(l As Label)
+
+  Dim ruta As String
+  'lee archivo
+  Try ruta = User.home & "/.gradio/data/tmp/currentcomercial.txt"
+  If Error Then Return
+  Try l.text = File.Load(ruta)
+  If Error Then Return
+
+End
+
+Public Sub actualizarListaComerciales2(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/eventoslistwebg3"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+Public Sub actualizarListaComerciales3(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/eventos-esperalistwebg3"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+Public Sub actualizarLabel141(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/volumenbajo"
+            'Print "ruta"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          End
+
+
+Public Sub actualizarListaComerciales(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/comercialeslistwebg3"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+Private Sub cargaContenido(ruta As String, l As ListBox)
+
+  Dim linea As New String[]
+  Dim a As Integer
+  'Dim contenido As String
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 1
+    l.Add(linea[a])
+  Next
+End
+
+
+Public Sub Button6_Click()
+
+Shell "~/.gradio/bin/programarevento-espera.sh"
+
+End
+
+Public Sub Button8_Click()
+
+Shell "~/.gradio/bin/record.sh"
+
+End
+
+
+Public Sub ButtonUP_Click()
+Dim ruta As String
+Dim ruta1 As String
+  Dim anterior As String
+
+  If ListBoxParrillaRaiz.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListBoxParrillaRaiz.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrillaRaiz.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index - 1].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index - 1].Text = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text = anterior
+    ListBoxParrillaRaiz.Index = ListBoxParrillaRaiz.Index - 1
+    ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "~/.gradio/bin/cartucho.sh"
+
+  Endif
+  
+  
+
+End
+
+Public Sub ButtonDown_Click()
+Dim ruta As String
+Dim ruta1 As String
+  Dim siguiente As String
+
+  If ListBoxParrillaRaiz.Index = ListBoxParrillaRaiz.Count - 1 Then
+    Message.Error("No se puede bajar más")
+
+  Else If ListBoxParrillaRaiz.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrillaRaiz.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    siguiente = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index + 1].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index + 1].Text = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text = siguiente
+    ListBoxParrillaRaiz.Index = ListBoxParrillaRaiz.Index + 1
+    ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "~/.gradio/bin/cartucho.sh"
+
+  Endif
+
+End
+
+Public Sub ButtonDelete_Click()
+Dim ruta As String
+Dim ruta1 As String
+  Dim posicion As Integer
+  posicion = ListBoxParrillaRaiz.Index
+  Try ListBoxParrillaRaiz.Remove(posicion)
+  ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "~/.gradio/bin/cartucho.sh"
+
+End
+
+
+Public Sub ButtonCUE_Click()
+  Dim ruta As String
+  ruta = ListBoxParrillaRaiz.Text
+'  TextBox2.text = ruta
+  'Print "ruta_cue" & ruta
+  Exec ["cue", ruta]
+  
+End
+
+Public Sub Button13_Click()
+
+Shell "xterm -geometry 80x3 -title 'EFECTO 7' -e ~/.gradio/data/panel/efecto7.sh"
+
+End
+
+Public Sub Button14_Click()
+
+Shell "xterm -geometry 80x3 -title 'EFECTO 8' -e ~/.gradio/data/panel/efecto8.sh"
+
+End
+
+Public Sub Button15_Click()
+
+Shell "xterm -geometry 80x3 -title 'EFECTO 9' -e ~/.gradio/data/panel/efecto9.sh"
+
+End
+
+Public Sub Button16_Click()
+
+Shell "xterm -geometry 80x3 -title 'EFECTO 10' -e ~/.gradio/data/panel/efecto10.sh"
+
+End
+
+Public Sub Cargar_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto1.sh"
+
+End
+
+Public Sub Cargar3_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto10.sh"
+
+End
+
+Public Sub Cargar11_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto2.sh"
+
+End
+
+Public Sub Cargar10_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto3.sh"
+
+End
+
+Public Sub Cargar9_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto4.sh"
+
+End
+
+Public Sub Cargar8_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto5.sh"
+
+End
+
+Public Sub Cargar7_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto6.sh"
+
+End
+
+Public Sub Cargar6_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto7.sh"
+
+End
+
+Public Sub Cargar5_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto8.sh"
+
+End
+
+Public Sub Cargar4_Click()
+
+Shell "sh ~/.gradio/data/panel/cargaefecto9.sh"
+
+End
+
+Public Sub Hora_Click()
+
+Shell "xterm -geometry 80x3 -title 'REPRODUCIENDO HORA' -e ~/.gradio/data/panel/hora.sh"
+
+End
+
+
+
+Public Sub Button17_Click()
+Button17.Foreground = Color.Red
+
+  Shell "~/.gradio/bin/inicio.sh"
+
+End
+
+Public Sub Button21_Click()
+
+  Shell "~/.gradio/bin/stop.sh"
+
+End
+
+Public Sub Button31_Click()
+
+  Shell "~/.gradio/bin/comercial.sh"
+
+End
+
+Public Sub Button24_Click()
+
+  Shell "~/.gradio/bin/parrilla.sh"
+
+End
+
+Public Sub Button32_Click()
+
+  Shell "~/.gradio/bin/comercialborrar.sh"
+
+End
+
+Public Sub Button38_Click()
+
+  Shell "~/.gradio/bin/reporte.sh"
+
+End
+
+Public Sub Button34_Click()
+
+  Shell "~/.gradio/bin/reportepautaje.sh"
+
+End
+
+Public Sub Button25_Click()
+
+  Shell "~/.gradio/bin/reporteparrilla.sh"
+
+End
+
+Public Procedure Button19_Click()
+
+  Shell "~/.gradio/bin/siguiente.sh"
+
+End
+
+Public Sub Button27_Click()
+
+  Shell "~/.gradio/bin/siguiente.sh"
+
+End
+
+Public Sub Button37_Click()
+
+  Shell "bash ~/.gradio/bin/streaming.sh"
+
+End
+
+
+
+Public Sub Button33_Click()
+
+  Shell "~/.gradio/bin/comercialborrarcaducados.sh"
+
+End
+
+
+Public Sub Button20_Click()
+
+  Shell "~/.gradio/bin/stopafter.sh"
+
+End
+
+Public Sub Button35_Click()
+
+ Shell "~/.gradio/bin/rotartema.sh"
+
+End
+
+Public Sub Button26_Click()
+
+  Shell "~/.gradio/bin/iniciocomercial.sh"
+
+End
+
+Public Sub Button28_Click()
+
+  Shell "~/.gradio/bin/stopaftermancom.sh"
+
+End
+
+Public Sub Button7_Click()
+
+  Shell "~/.gradio/bin/vaciarlista.sh" Wait
+    Try actualizarParrilla(ListBoxParrillaRaiz)
+
+End
+
+Public Sub Button30_Click()
+
+  Shell "~/.gradio/bin/programarevento.sh"
+
+End
+
+Public Sub Button29_Click()
+
+  Shell "sh ~/.gradio/data/panel/cargacomercial.sh"
+
+End
+
+Public Sub Button18_Click()
+
+  Shell "~/.gradio/bin/repite.sh"
+
+End
+
+Public Sub LabelCancion2_DblClick()
+
+   Shell "sh ~/.gradio/data/panel/cargatema1.sh"
+
+End
+
+
+Public Sub LabelCancion3_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema2.sh"
+
+End
+
+Public Sub LabelCancion4_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema3.sh"
+
+End
+
+Public Sub LabelCancion5_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema4.sh"
+
+End
+
+Public Sub LabelCancion6_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema5.sh"
+
+End
+
+Public Sub LabelCancion8_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema6.sh"
+
+End
+
+Public Sub LabelCancion9_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema7.sh"
+
+End
+
+Public Sub LabelCancion10_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema8.sh"
+
+End
+
+
+Public Sub LabelCancion11_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema9.sh"
+
+End
+
+Public Sub LabelCancion12_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema10.sh"
+
+End
+
+Public Sub LabelCancion13_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema11.sh"
+
+End
+
+Public Sub LabelCancion14_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema12.sh"
+
+End
+
+Public Sub LabelCancion15_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema13.sh"
+
+End
+
+Public Sub LabelCancion16_DblClick()
+
+  Shell "sh ~/.gradio/data/panel/cargatema14.sh"
+
+End
+
+
+Public Sub Button1_Click()
+
+   Shell "~/.gradio/bin/vaciarcomerciales.sh"
+
+End
+
+
+Public Sub ButtonBuscar_Click()
+
+   Shell "~/.gradio/bin/GR_Buscar.gambas"
+
+End
+
+Public Sub ToggleButton1_Click()
+
+    If ToggleButton1.Value = True Then
+             ToggleButton1.Background = Color.Green
+             ToggleButton1.Foreground = Color.Black
+             ToggleButton1.Text = "Auto"
+             Shell "bash ~/.gradio/bin/./auto.sh"
+      
+      Else
+      ToggleButton1.Background = &HFF0000&
+      ToggleButton1.Foreground = Color.Gray
+      ToggleButton1.Text = "Manual"
+      Shell "bash ~/.gradio/bin/./manual.sh"
+      Endif
+
+End
+
+
+Public Sub Button3_Click()
+
+  Shell "~/.gradio/bin/volumenbajo.sh" Wait
+  Try actualizarLabel141(Label141)
+
+End
+
+Public Sub Button4_Click()
+
+   'Shell "~/.gradio/bin/GR_Preferencias.gambas"
+   Configuracion.Show()
+
+End
+
+Public Sub LabelCancion2_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop1.sh"
+End
+
+Public Sub LabelCancion3_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop2.sh"
+End
+
+Public Sub LabelCancion4_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop3.sh"
+End
+
+Public Sub LabelCancion5_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop4.sh"
+End
+
+Public Sub LabelCancion6_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop5.sh"
+End
+
+Public Sub ListBoxComerciales_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/dropcomercial.sh"
+End
+  
+
+Public Sub ListBoxComerciales_DblClick()
+
+   Shell "sh ~/.gradio/data/panel/cargacomercial.sh"
+
+End
+
+
+Public Sub ListBoxComerciales3_DblClick()
+
+    Shell "~/.gradio/bin/programarevento-espera.sh"
+
+End
+
+
+Public Sub Button5_Click()
+
+  Shell "~/.gradio/bin/borrarultimocom.sh"
+
+End
+
+Public Sub Button22_Click()
+
+    Shell "~/.gradio/bin/rotarcomercial.sh"
+
+End
+
+
+
+Public Sub Button23_Click()
+
+    Shell "~/.gradio/bin/borrarultimotema.sh"
+
+End
+
+Public Sub LabelA7_DblClick()
+
+      Shell "~/.gradio/bin/configuraintercul.sh"
+      
+End
+
+Public Sub LabelA8_DblClick()
+
+      Shell "~/.gradio/bin/configuranacional.sh"
+      
+End
+
+Public Sub actualizarLabel11(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label11_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX11.play"
+End
+Public Sub Label11_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel11(Label11)
+End
+Public Sub actualizarLabel12(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label12_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX0.play"
+End
+Public Sub Label12_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel12(Label12)
+End
+Public Sub actualizarLabel13(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label13_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX1.play"
+End
+Public Sub Label13_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel13(Label13)
+End
+Public Sub actualizarLabel14(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label14_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX2.play"
+End
+Public Sub Label14_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel14(Label14)
+End
+Public Sub actualizarLabel15(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label15_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX3.play"
+End
+Public Sub Label15_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel15(Label15)
+End
+Public Sub actualizarLabel16(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label16_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX4.play"
+End
+Public Sub Label16_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel16(Label16)
+End
+Public Sub actualizarLabel17(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label17_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX5.play"
+End
+Public Sub Label17_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel17(Label17)
+End
+Public Sub actualizarLabel18(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label18_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX6.play"
+End
+Public Sub Label18_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel18(Label18)
+End
+Public Sub actualizarLabel19(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label19_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX7.play"
+End
+Public Sub Label19_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel19(Label19)
+End
+Public Sub actualizarLabel20(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label20_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX8.play"
+End
+Public Sub Label20_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel20(Label20)
+End
+Public Sub actualizarLabel21(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label21_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX9.play"
+End
+Public Sub Label21_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel21(Label21)
+End
+Public Sub actualizarLabel22(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX1/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label22_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX1/FX10.play"
+End
+Public Sub Label22_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX1 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel22(Label22)
+End
+Public Sub actualizarLabel23(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label23_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX11.play"
+End
+Public Sub Label23_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel23(Label23)
+End
+Public Sub actualizarLabel24(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label24_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX0.play"
+End
+Public Sub Label24_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel24(Label24)
+End
+Public Sub actualizarLabel25(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label25_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX1.play"
+End
+Public Sub Label25_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel25(Label25)
+End
+Public Sub actualizarLabel26(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label26_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX2.play"
+End
+Public Sub Label26_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel26(Label26)
+End
+Public Sub actualizarLabel27(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label27_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX3.play"
+End
+Public Sub Label27_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel27(Label27)
+End
+Public Sub actualizarLabel28(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label28_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX4.play"
+End
+Public Sub Label28_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel28(Label28)
+End
+Public Sub actualizarLabel29(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label29_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX5.play"
+End
+Public Sub Label29_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel29(Label29)
+End
+Public Sub actualizarLabel30(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label30_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX6.play"
+End
+Public Sub Label30_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel30(Label30)
+End
+Public Sub actualizarLabel31(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label31_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX7.play"
+End
+Public Sub Label31_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel31(Label31)
+End
+Public Sub actualizarLabel32(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label32_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX8.play"
+End
+Public Sub Label32_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel32(Label32)
+End
+Public Sub actualizarLabel33(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label33_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX9.play"
+End
+Public Sub Label33_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel33(Label33)
+End
+Public Sub actualizarLabel34(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX2/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label34_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX2/FX10.play"
+End
+Public Sub Label34_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX2 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel34(Label34)
+End
+Public Sub actualizarLabel35(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label35_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX11.play"
+End
+Public Sub Label35_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel35(Label35)
+End
+Public Sub actualizarLabel36(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label36_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX0.play"
+End
+Public Sub Label36_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel36(Label36)
+End
+Public Sub actualizarLabel37(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label37_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX1.play"
+End
+Public Sub Label37_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel37(Label37)
+End
+Public Sub actualizarLabel38(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label38_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX2.play"
+End
+Public Sub Label38_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel38(Label38)
+End
+Public Sub actualizarLabel39(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label39_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX3.play"
+End
+Public Sub Label39_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel39(Label39)
+End
+Public Sub actualizarLabel40(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label40_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX4.play"
+End
+Public Sub Label40_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel40(Label40)
+End
+Public Sub actualizarLabel41(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label41_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX5.play"
+End
+Public Sub Label41_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel41(Label41)
+End
+Public Sub actualizarLabel42(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label42_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX6.play"
+End
+Public Sub Label42_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel42(Label42)
+End
+Public Sub actualizarLabel43(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label43_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX7.play"
+End
+Public Sub Label43_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel43(Label43)
+End
+Public Sub actualizarLabel44(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label44_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX8.play"
+End
+Public Sub Label44_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel44(Label44)
+End
+Public Sub actualizarLabel45(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label45_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX9.play"
+End
+Public Sub Label45_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel45(Label45)
+End
+Public Sub actualizarLabel46(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX3/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label46_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX3/FX10.play"
+End
+Public Sub Label46_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX3 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel46(Label46)
+End
+Public Sub actualizarLabel47(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label47_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX11.play"
+End
+Public Sub Label47_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel47(Label47)
+End
+Public Sub actualizarLabel48(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label48_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX0.play"
+End
+Public Sub Label48_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel48(Label48)
+End
+Public Sub actualizarLabel49(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label49_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX1.play"
+End
+Public Sub Label49_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel49(Label49)
+End
+Public Sub actualizarLabel50(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label50_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX2.play"
+End
+Public Sub Label50_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel50(Label50)
+End
+Public Sub actualizarLabel51(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label51_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX3.play"
+End
+Public Sub Label51_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel51(Label51)
+End
+Public Sub actualizarLabel52(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label52_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX4.play"
+End
+Public Sub Label52_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel52(Label52)
+End
+Public Sub actualizarLabel53(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label53_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX5.play"
+End
+Public Sub Label53_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel53(Label53)
+End
+Public Sub actualizarLabel54(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label54_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX6.play"
+End
+Public Sub Label54_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel54(Label54)
+End
+Public Sub actualizarLabel55(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label55_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX7.play"
+End
+Public Sub Label55_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel55(Label55)
+End
+Public Sub actualizarLabel56(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label56_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX8.play"
+End
+Public Sub Label56_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel56(Label56)
+End
+Public Sub actualizarLabel57(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label57_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX9.play"
+End
+Public Sub Label57_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel57(Label57)
+End
+Public Sub actualizarLabel58(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX4/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label58_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX4/FX10.play"
+End
+Public Sub Label58_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX4 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel58(Label58)
+End
+Public Sub actualizarLabel59(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label59_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX11.play"
+End
+Public Sub Label59_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel59(Label59)
+End
+Public Sub actualizarLabel60(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label60_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX0.play"
+End
+Public Sub Label60_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel60(Label60)
+End
+Public Sub actualizarLabel61(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label61_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX1.play"
+End
+Public Sub Label61_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel61(Label61)
+End
+Public Sub actualizarLabel62(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label62_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX2.play"
+End
+Public Sub Label62_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel62(Label62)
+End
+Public Sub actualizarLabel63(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label63_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX3.play"
+End
+Public Sub Label63_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel63(Label63)
+End
+Public Sub actualizarLabel64(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label64_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX4.play"
+End
+Public Sub Label64_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel64(Label64)
+End
+Public Sub actualizarLabel65(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label65_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX5.play"
+End
+Public Sub Label65_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel65(Label65)
+End
+Public Sub actualizarLabel66(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label66_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX6.play"
+End
+Public Sub Label66_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel66(Label66)
+End
+Public Sub actualizarLabel67(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label67_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX7.play"
+End
+Public Sub Label67_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel67(Label67)
+End
+Public Sub actualizarLabel68(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label68_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX8.play"
+End
+Public Sub Label68_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel68(Label68)
+End
+Public Sub actualizarLabel69(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label69_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX9.play"
+End
+Public Sub Label69_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel69(Label69)
+End
+Public Sub actualizarLabel70(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX5/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label70_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX5/FX10.play"
+End
+Public Sub Label70_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX5 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel70(Label70)
+End
+Public Sub actualizarLabel71(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label71_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX11.play"
+End
+Public Sub Label71_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel71(Label71)
+End
+Public Sub actualizarLabel72(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label72_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX0.play"
+End
+Public Sub Label72_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel72(Label72)
+End
+Public Sub actualizarLabel73(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label73_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX1.play"
+End
+Public Sub Label73_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel73(Label73)
+End
+Public Sub actualizarLabel74(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label74_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX2.play"
+End
+Public Sub Label74_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel74(Label74)
+End
+Public Sub actualizarLabel75(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label75_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX3.play"
+End
+Public Sub Label75_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel75(Label75)
+End
+Public Sub actualizarLabel76(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label76_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX4.play"
+End
+Public Sub Label76_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel76(Label76)
+End
+Public Sub actualizarLabel77(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label77_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX5.play"
+End
+Public Sub Label77_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel77(Label77)
+End
+Public Sub actualizarLabel78(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label78_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX6.play"
+End
+Public Sub Label78_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel78(Label78)
+End
+Public Sub actualizarLabel79(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label79_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX7.play"
+End
+Public Sub Label79_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel79(Label79)
+End
+Public Sub actualizarLabel80(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label80_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX8.play"
+End
+Public Sub Label80_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel80(Label80)
+End
+Public Sub actualizarLabel81(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label81_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX9.play"
+End
+Public Sub Label81_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel81(Label81)
+End
+Public Sub actualizarLabel82(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX6/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label82_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX6/FX10.play"
+End
+Public Sub Label82_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX6 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel82(Label82)
+End
+Public Sub actualizarLabel83(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label83_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX11.play"
+End
+Public Sub Label83_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel83(Label83)
+End
+Public Sub actualizarLabel84(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label84_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX0.play"
+End
+Public Sub Label84_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel84(Label84)
+End
+Public Sub actualizarLabel85(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label85_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX1.play"
+End
+Public Sub Label85_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel85(Label85)
+End
+Public Sub actualizarLabel86(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label86_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX2.play"
+End
+Public Sub Label86_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel86(Label86)
+End
+Public Sub actualizarLabel87(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label87_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX3.play"
+End
+Public Sub Label87_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel87(Label87)
+End
+Public Sub actualizarLabel88(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label88_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX4.play"
+End
+Public Sub Label88_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel88(Label88)
+End
+Public Sub actualizarLabel89(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label89_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX5.play"
+End
+Public Sub Label89_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel89(Label89)
+End
+Public Sub actualizarLabel90(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label90_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX6.play"
+End
+Public Sub Label90_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel90(Label90)
+End
+Public Sub actualizarLabel91(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label91_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX7.play"
+End
+Public Sub Label91_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel91(Label91)
+End
+Public Sub actualizarLabel92(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label92_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX8.play"
+End
+Public Sub Label92_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel92(Label92)
+End
+Public Sub actualizarLabel93(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label93_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX9.play"
+End
+Public Sub Label93_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel93(Label93)
+End
+Public Sub actualizarLabel94(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX7/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label94_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX7/FX10.play"
+End
+Public Sub Label94_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX7 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel94(Label94)
+End
+Public Sub actualizarLabel95(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label95_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX11.play"
+End
+Public Sub Label95_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel95(Label95)
+End
+Public Sub actualizarLabel96(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label96_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX0.play"
+End
+Public Sub Label96_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel96(Label96)
+End
+Public Sub actualizarLabel97(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label97_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX1.play"
+End
+Public Sub Label97_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel97(Label97)
+End
+Public Sub actualizarLabel98(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label98_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX2.play"
+End
+Public Sub Label98_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel98(Label98)
+End
+Public Sub actualizarLabel99(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label99_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX3.play"
+End
+Public Sub Label99_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel99(Label99)
+End
+Public Sub actualizarLabel100(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label100_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX4.play"
+End
+Public Sub Label100_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel100(Label100)
+End
+Public Sub actualizarLabel101(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label101_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX5.play"
+End
+Public Sub Label101_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel101(Label101)
+End
+Public Sub actualizarLabel102(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label102_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX6.play"
+End
+Public Sub Label102_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel102(Label102)
+End
+Public Sub actualizarLabel103(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label103_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX7.play"
+End
+Public Sub Label103_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel103(Label103)
+End
+Public Sub actualizarLabel104(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label104_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX8.play"
+End
+Public Sub Label104_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel104(Label104)
+End
+Public Sub actualizarLabel105(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label105_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX9.play"
+End
+Public Sub Label105_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel105(Label105)
+End
+Public Sub actualizarLabel106(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX8/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label106_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX8/FX10.play"
+End
+Public Sub Label106_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX8 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel106(Label106)
+End
+Public Sub actualizarLabel107(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label107_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX11.play"
+End
+Public Sub Label107_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel107(Label107)
+End
+Public Sub actualizarLabel108(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label108_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX0.play"
+End
+Public Sub Label108_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel108(Label108)
+End
+Public Sub actualizarLabel109(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label109_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX1.play"
+End
+Public Sub Label109_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel109(Label109)
+End
+Public Sub actualizarLabel110(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label110_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX2.play"
+End
+Public Sub Label110_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel110(Label110)
+End
+Public Sub actualizarLabel111(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label111_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX3.play"
+End
+Public Sub Label111_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel111(Label111)
+End
+Public Sub actualizarLabel112(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label112_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX4.play"
+End
+Public Sub Label112_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel112(Label112)
+End
+Public Sub actualizarLabel113(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label113_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX5.play"
+End
+Public Sub Label113_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel113(Label113)
+End
+Public Sub actualizarLabel114(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label114_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX6.play"
+End
+Public Sub Label114_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel114(Label114)
+End
+Public Sub actualizarLabel115(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label115_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX7.play"
+End
+Public Sub Label115_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel115(Label115)
+End
+Public Sub actualizarLabel116(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label116_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX8.play"
+End
+Public Sub Label116_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel116(Label116)
+End
+Public Sub actualizarLabel117(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label117_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX9.play"
+End
+Public Sub Label117_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel117(Label117)
+End
+Public Sub actualizarLabel118(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX9/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label118_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX9/FX10.play"
+End
+Public Sub Label118_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX9 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel118(Label118)
+End
+Public Sub actualizarLabel119(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label119_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX11.play"
+End
+Public Sub Label119_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel119(Label119)
+End
+Public Sub actualizarLabel120(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label120_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX0.play"
+End
+Public Sub Label120_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel120(Label120)
+End
+Public Sub actualizarLabel121(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label121_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX1.play"
+End
+Public Sub Label121_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel121(Label121)
+End
+Public Sub actualizarLabel122(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label122_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX2.play"
+End
+Public Sub Label122_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel122(Label122)
+End
+Public Sub actualizarLabel123(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label123_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX3.play"
+End
+Public Sub Label123_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel123(Label123)
+End
+Public Sub actualizarLabel124(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label124_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX4.play"
+End
+Public Sub Label124_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel124(Label124)
+End
+Public Sub actualizarLabel125(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label125_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX5.play"
+End
+Public Sub Label125_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel125(Label125)
+End
+Public Sub actualizarLabel126(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label126_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX6.play"
+End
+Public Sub Label126_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel126(Label126)
+End
+Public Sub actualizarLabel127(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label127_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX7.play"
+End
+Public Sub Label127_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel127(Label127)
+End
+Public Sub actualizarLabel128(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label128_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX8.play"
+End
+Public Sub Label128_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel128(Label128)
+End
+Public Sub actualizarLabel129(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX9.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label129_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX9.play"
+End
+Public Sub Label129_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 9 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel129(Label129)
+End
+Public Sub actualizarLabel130(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX10/FX10.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label130_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX10/FX10.play"
+End
+Public Sub Label130_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX10 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 10 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel130(Label130)
+End
+
+Public Sub actualizarLabel131(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX11.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label131_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX11.play"
+End
+Public Sub Label131_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 11 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel131(Label131)
+End
+Public Sub actualizarLabel132(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX0.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label132_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX0.play"
+End
+Public Sub Label132_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 0 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel132(Label132)
+End
+Public Sub actualizarLabel133(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX1.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label133_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX1.play"
+End
+Public Sub Label133_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 1 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel133(Label133)
+End
+Public Sub actualizarLabel134(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX2.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label134_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX2.play"
+End
+Public Sub Label134_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 2 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel134(Label134)
+End
+Public Sub actualizarLabel135(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX3.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label135_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX3.play"
+End
+Public Sub Label135_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 3 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel135(Label135)
+End
+Public Sub actualizarLabel136(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX4.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label136_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX4.play"
+End
+Public Sub Label136_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 4 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel136(Label136)
+End
+Public Sub actualizarLabel137(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX5.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label137_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX5.play"
+End
+Public Sub Label137_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 5 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel137(Label137)
+End
+Public Sub actualizarLabel138(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX6.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label138_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX6.play"
+End
+Public Sub Label138_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 6 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel138(Label138)
+End
+Public Sub actualizarLabel139(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX7.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label139_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX7.play"
+End
+Public Sub Label139_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 7 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel139(Label139)
+End
+Public Sub actualizarLabel140(l As Label)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/panel/botonera/fxxs/FX11/FX8.nombre"
+If Error Then Return
+Try l.text = File.Load(ruta)
+If Error Then Return
+End
+Public Sub Label140_MouseDown()
+  Shell "xterm -geometry 80x3 -title EFECTOS -e mplayer -playlist ~/.gradio/data/panel/botonera/fxxs/FX11/FX8.play"
+End
+Public Sub Label140_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data
+ File.Save(ruta, archivo)
+  Shell "echo FX11 > ~/.gradio/data/panel/tmp/dfxtmp"
+  Shell "echo 8 > ~/.gradio/data/panel/tmp/fxtmp"
+  Shell "sh ~/.gradio/data/panel/drop0.sh" Wait
+  Try actualizarLabel140(Label140)
+End
+
+
+''Vumeter
+Public Sub btnStart_Click()
+Dim phandle As Pointer
+Dim sdevice As String = "default"
+Dim err, fc, iVol, i As Integer
+Dim ichannel As Byte
+Dim abuffer As New Short[iSize]
+
+   ' Einstellen der Frequenz auf 44.1 kHz
+   fc = 44100
+
+   ' Festlegen der Kanalanzahl (1=mono, 2=stereo)
+   ichannel = 2
+
+   ' Registrieren von ALSA zur Aufnahme
+   ' err = snd_pcm_open(VarPtr(phandle), sdevice, SND_PCM_STREAM_CAPTURE, 0)
+   err = snd_pcm_open(VarPtr(phandle), sdevice, SND_PCM_STREAM_PLAYBACK, 0)
+   
+   
+   If err < 0 Then Error.Raise("Fehler beim Öffnen des PCM Subsystems: " & snd_strerror(err))
+
+   ' Einstellen der ALSA PCM Parameter
+   err = snd_pcm_set_params(phandle, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, ichannel, fc, 1, 0)
+   If err < 0 Then Error.Raise("Fehler beim Einstellen der PCM Parameter: " & snd_strerror(err))
+
+   $bStop = True
+
+   While $bStop   ' läuft bis 'Stop' gedrückt wird  
+
+   ' Übernahme der Daten in das abuffer-Array
+   err = snd_pcm_readi(phandle, abuffer, iSize / 2)
+   If err < 0 Then Error.Raise("Fehler bei der Audiodatenaufzeichnung " & snd_strerror(err))
+
+   ' Berechnung der Summe der Volume-Werte 
+   For i = 0 To iSize - 1
+      iVol += Abs(abuffer[i])
+   Next
+  
+   hVol = iVol 
+   PrepareDraw()
+   iVol = 0
+
+   ' 1 ms Warten, um Programmeingaben vornehmen zu können
+   Wait 0.001
+   Wend
+   
+   If $bStop = False Then snd_pcm_close(phandle)
+   abuffer.Clear()
+
+End
+
+
+
+Public Sub btnStop_Click()
+  $bStop = False
+End
+
+Public Sub PrepareDraw()
+Dim aColors As Integer[] = [Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.red] ' Farbskale für Volume-Balken
+Dim aPositions As Float[] = [0, 0.1, 0.15, 0.17, 0.23]                                  ' Farbverlaufspunkte
+   
+   $hPic = New Picture(drwVol.Width, drwVol.Height, True)
+   
+   Paint.Begin($hPic)
+      Paint.Translate(3, drwVol.H)                                            ' Um 3 nach rechts und Höhe der Zeichenfläche verschieben
+      Paint.Scale(1, -5)                                                      ' y nach oben
+         
+      Paint.Brush = Paint.LinearGradient(drwVol.w / 2, 0, drwVol.w / 2, drwVol.H, aColors, aPositions)
+      Paint.Rectangle(0, 0, 45, drwVol.H)                                     ' Farbverlaufsskala malen
+      Paint.Fill()
+   
+      hVol = Abs(hVol / 2 ^ 15 / iSize * drwVol.H - 5)                        ' Max. Volumenwert ist 5 kleiner als drwVol.H
+      Paint.Brush = Paint.Color(Color.Black)                       ' Einen Pinsel in Hintergrundfarbe
+      Paint.Rectangle(0, hvol, drwVol.W, drwVol.H)                            ' Rechteck, das nur den anzuzeigenden Bereich des Volumenbalkens freigibt und den Rest überdeckt 
+      Paint.Fill() 
+   Paint.End
+   drwVol.Refresh()
+End
+
+
+Public Sub drwVol_Draw()  
+  Paint.Begin(drwVol)
+    If $hPic Then Paint.DrawPicture($hPic, 0, 0)  
+  Paint.End
+End 
+''Vumeter-end
+
+
+
+
+Public Sub TabStrip2_Click()
+  Try actualizarListaPautaje(ListBoxPautaje)
+End
+
+
+
+Public Sub ButtonPautaje_Click()
+
+    Shell "xterm -fg Green -bg Red -title 'Actualizando Pautaje'  -geometry 60x2-40+200 -e ~/.gradio/bin/visor-pauta.sh" Wait
+    Try actualizarListaPautaje(ListBoxPautaje)
+End
+
+
+Public Sub LabelCancion8_Drop()
+Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop6.sh"
+End
+  
+
+
+
+Public Sub LabelCancion9_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop7.sh"
+
+End
+
+
+
+Public Sub LabelCancion10_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop8.sh"
+
+End
+
+Public Sub LabelCancion11_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop9.sh"
+
+End
+
+Public Sub LabelCancion12_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop10.sh"
+
+End
+
+Public Sub LabelCancion13_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop11.sh"
+
+End
+
+Public Sub LabelCancion14_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell "sh ~/.gradio/data/panel/drop12.sh"
+
+End
+
+Public Sub LabelCancion15_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'Dim l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print archivo
+ File.Save(ruta, archivo)
+  Shell ("sh ~/.gradio/data/panel/drop13.sh")
+
+End
+
+Public Sub LabelCancion16_Drop()
+
+  Dim ruta As String
+Dim archivo As String
+'im l As Label
+Try ruta = User.home & "/.gradio/data/tmp/drop"
+ archivo = Drag.Data 
+ 'Print "archivo " & archivo
+ File.Save(ruta, archivo)
+  Shell "xterm -e bash ~/.gradio/data/panel/drop14.sh"
+
+End
+
+' Gambas class file
+
+Private $hFileViewObs As Observer
+Private $hDirViewObs As Observer
+Private $hFileView As FileView
+Private $hDirView As DirView
+
+
+Public Sub HFVObs_MouseDrag()
+Dim ruta As String
+  ruta = DirView1.Current & "/" & FileView1.Current
+  If Mouse.Left Then
+    Drag.Icon = Picture["icon:/32/file"]
+FileView1.Drag(ruta)
+  Endif
+
+End
+
+Public Sub HDVObs_MouseDrag()
+  If Mouse.Left Then
+    Drag.Icon = Picture["icon:/32/directory"]
+    FileView1.Drag(FileView1.Current)
+  Endif
+
+End
+
+Public Sub ToolButton1_MouseDrag()
+
+  If Mouse.Left Then
+    Drag.Icon = Last.Picture
+    Last.Drag(Last.Picture.Image)
+  Endif
+
+End
+
+
+Public Sub FileView1_DragMove()
+Drag.Show(FileView1)  
+End
+
+Private Sub GetFileView()
+  $hDirView = DirView1
+  $hFileView = FileView1
+ 'Print $hFileView.Name 
+  $hDirViewObs = New Observer($hDirView) As "HDVObs"
+  $hFileViewObs = New Observer($hFileView) As "HFVObs"
+End
+
+Public Sub cue2_Click()
+  Dim ruta As String
+  ruta = DirView1.Current & "/" & FileView1.Current
+  'TextBox2.text = ruta
+  'Print "ruta_cue" & ruta
+  Exec ["cue", ruta]
+End
+
+Public Sub DirView1_mousedown()
+FileView1.Dir = DirView1.Current
+End
+
+'''''''''''''''''Parrilla Raiz --- Asistida
+'''''''''''''''''Modo interactivo
+
+
+Public Sub actualizarParrilla(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/playlist"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+
+Public Sub actualizarParrillag3(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/playlistg3"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+Public Sub ButtonCargaParrilla_Click()
+
+  Try actualizarParrilla(ListBoxParrillaRaiz)
+'  Try actualizarParrilla(ListBoxParrillag3)
+Try UpdateListBoxComerciales4(ListBoxComerciales4)
+
+End
+
+Public Sub UpdateParrillas()
+  Try actualizarParrilla(ListBoxParrillaRaiz)
+'  Try actualizarParrilla(ListBoxParrillag3)
+
+End
+
+Public Sub Updatcomer4()
+  Try UpdateListBoxComerciales4(ListBoxComerciales4)
+'  Try actualizarParrilla(ListBoxParrillag3)
+
+End
+
+Public Sub ButtonGuardarParrillas_Click()
+Dim ruta As String
+Dim ruta1 As String
+'Dim Sobreescribir As Integer
+Dim Nranuras As String
+' Save the ListBox content to a text file
+ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+ ' Dialog.Filter = ["*.lst", "Lists", "*.txt", "Text Files", "*", "All Files"]
+  'If Dialog.SaveFile() Then Return
+
+Shell "grep -c $ " & ruta To Nranuras
+Try File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "~/.gradio/bin/cartucho.sh"
+End
+
+
+
+
+Public Sub ListBoxParrillaRaiz_Drop()
+Dim ruta As String
+Dim ruta1 As String
+'Dim Sobreescribir As Integer
+'Dim Nranuras As String
+'ListBoxParrillaRaiz.Add(Drag.data)
+ListBoxParrillaRaiz.Add(Split(FromUrl(Replace(Replace(Drag.data, "\r\n", ""), "file://", "")), "\r")[0])
+ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "sed -i '/^$/d' ~/.gradio/data/tmp/playlist*" Wait
+Shell "~/.gradio/bin/cartucho.sh"
+Try actualizarParrilla(ListBoxParrillaRaiz)
+End
+ 
+
+Public Sub ListBoxComerciales4_Drop()
+Dim ruta As String
+Dim ruta1 As String
+'Dim Sobreescribir As Integer
+'Dim Nranuras As String
+'ListBoxComerciales4.Add(Drag.data)
+ListBoxComerciales4.Add(Split(FromUrl(Replace(Replace(Drag.data, "\r\n", ""), "file://", "")), "\r")[0])
+ruta = User.home & "/.gradio/data/tmp/comercialeslistwebg3"
+ruta1 = User.home & "/.gradio/data/tmp/comercialeslist"
+File.Save(ruta, ListBoxComerciales4.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxComerciales4.List.Join("\n") & "\n")
+Shell "sed -i '/^$/d' ~/.gradio/data/tmp/comercialeslist*" Wait
+End 
+
+
+
+
+Public Sub UpdateListBoxComerciales4(l As ListBox)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/tmp/comercialeslist"
+If Error Then Return
+ cargaContenido(ruta, l)
+End
+
+
+
+''''''''''''''''''Menu'''''''''''''''''''
+
+Public Sub Subir_Click()
+Dim ruta As String
+Dim ruta1 As String
+  Dim anterior As String
+
+  If ListBoxParrillaRaiz.Index = 0 Then
+    Message.Error("No se puede subir más")
+  Else
+    anterior = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index - 1].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index - 1].Text = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text = anterior
+    ListBoxParrillaRaiz.Index = ListBoxParrillaRaiz.Index - 1
+    ruta = User.home & "/.gradio/data/tmp/playlist"
+    ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+    File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+    Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+    Shell "sed -i '/^$/d' ~/.gradio/data/tmp/playlist*" Wait
+    Shell "~/.gradio/bin/cartucho.sh"
+    Try actualizarParrilla(ListBoxParrillaRaiz)
+  Endif
+End
+
+Public Sub Bajar_Click()
+Dim ruta As String
+Dim ruta1 As String
+  Dim siguiente As String
+
+  If ListBoxParrillaRaiz.Index = ListBoxParrillaRaiz.Count - 1 Then
+    Message.Error("No se puede bajar más")
+
+  Else If ListBoxParrillaRaiz.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    siguiente = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index + 1].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index + 1].Text = ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text
+    ListBoxParrillaRaiz[ListBoxParrillaRaiz.Index].Text = siguiente
+    ListBoxParrillaRaiz.Index = ListBoxParrillaRaiz.Index + 1
+    ruta = User.home & "/.gradio/data/tmp/playlist"
+    ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+    File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+    Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+    Shell "sed -i '/^$/d' ~/.gradio/data/tmp/playlist*" Wait
+    Shell "~/.gradio/bin/cartucho.sh"
+    Try actualizarParrilla(ListBoxParrillaRaiz)
+
+  Endif
+
+End
+
+Public Sub Borrar_Click()
+Dim ruta As String
+Dim ruta1 As String
+  Dim posicion As Integer
+  posicion = ListBoxParrillaRaiz.Index
+  Try ListBoxParrillaRaiz.Remove(posicion)
+  ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "sed -i '/^$/d' ~/.gradio/data/tmp/playlist*" Wait
+Shell "~/.gradio/bin/cartucho.sh"
+Try actualizarParrilla(ListBoxParrillaRaiz)
+
+End
+
+
+Public Sub cue3_Click()
+  Dim ruta As String
+  ruta = ListBoxParrillaRaiz.Text
+  Exec ["cue", ruta]
+End
+
+Public Sub Actualizar_Click()
+
+  Try actualizarParrilla(ListBoxParrillaRaiz)
+  Try UpdateListBoxComerciales4(ListBoxComerciales4)
+
+End
+
+''''''''''''''''''''''''''''
+
+Public Sub Subir4_Click()
+Dim ruta As String
+Dim ruta1 As String
+Dim anterior As String
+
+  If ListBoxComerciales4.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListBoxComerciales4.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxComerciales4.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListBoxComerciales4[ListBoxComerciales4.Index - 1].Text
+    ListBoxComerciales4[ListBoxComerciales4.Index - 1].Text = ListBoxComerciales4[ListBoxComerciales4.Index].Text
+    ListBoxComerciales4[ListBoxComerciales4.Index].Text = anterior
+    ListBoxComerciales4.Index = ListBoxComerciales4.Index - 1
+    ruta = User.home & "/.gradio/data/tmp/comercialeslistwebg3"
+    ruta1 = User.home & "/.gradio/data/tmp/comercialeslist"
+    File.Save(ruta, ListBoxComerciales4.List.Join("\n") & "\n")
+    Try File.Save(ruta1, ListBoxComerciales4.List.Join("\n") & "\n")
+  Endif
+End
+
+Public Sub Bajar4_Click()
+Dim ruta As String
+Dim ruta1 As String
+Dim siguiente As String
+
+  If ListBoxComerciales4.Index = ListBoxComerciales4.Count - 1 Then
+    Message.Error("No se puede bajar más")
+
+  Else If ListBoxComerciales4.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxComerciales4.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    siguiente = ListBoxComerciales4[ListBoxComerciales4.Index + 1].Text
+    ListBoxComerciales4[ListBoxComerciales4.Index + 1].Text = ListBoxComerciales4[ListBoxComerciales4.Index].Text
+    ListBoxComerciales4[ListBoxComerciales4.Index].Text = siguiente
+    ListBoxComerciales4.Index = ListBoxComerciales4.Index + 1
+    ruta = User.home & "/.gradio/data/tmp/comercialeslistwebg3"
+    ruta1 = User.home & "/.gradio/data/tmp/comercialeslist"
+    File.Save(ruta, ListBoxComerciales4.List.Join("\n") & "\n")
+    Try File.Save(ruta1, ListBoxComerciales4.List.Join("\n") & "\n")    
+  Endif
+
+End
+
+Public Sub Borrar4_Click()
+Dim ruta As String
+Dim ruta1 As String
+  Dim posicion As Integer
+  posicion = ListBoxComerciales4.Index
+  Try ListBoxComerciales4.Remove(posicion)
+    ruta = User.home & "/.gradio/data/tmp/comercialeslistwebg3"
+    ruta1 = User.home & "/.gradio/data/tmp/comercialeslist"
+    File.Save(ruta, ListBoxComerciales4.List.Join("\n") & "\n")
+    Try File.Save(ruta1, ListBoxComerciales4.List.Join("\n") & "\n")
+End
+
+
+Public Sub cue4_Click()
+  Dim ruta As String
+  ruta = ListBoxComerciales4.Text
+  Exec ["cue", ruta]
+End
+
+
+
+
+''''''''''''''''''''''''''''
+' Gambas class file
+Public Sub btnStartUpdate_Click()
+Dim cartucho1 As String = "cartucho1"
+Dim cartuchoold As String 
+
+While cartucho1
+  Shell "head -n 1 ~/.gradio/data/tmp/playlist" To cartucho1
+  cartuchoold = cartucho1
+  While cartuchoold = cartucho1
+  Shell "head -n 1 ~/.gradio/data/tmp/playlist" To cartucho1
+      'Print "no hay cambio"
+   Wait 0.2
+   Wend
+   UpdateParrillas()
+   Print "Se actualizaron las parrillas" & cartucho1
+Wend
+  
+End
+
+''''''''''''''''''''''''''''''''''''''Socket
+Public Sub Socket_Listen_Click()
+  Wait 4
+    'TCP
+    MyServerSocket.Type = Net.Internet
+    ' The port to listen to
+    MyServerSocket.Port = 8888 'Val(txtPort.Text)
+    ' we start listening
+    MyServerSocket.Listen(0)
+ 
+
+  If MyServerSocket.Status = Net.Active Then 
+    ' listening
+    'btnListen.Enabled = False
+    'btnClose.Enabled = True
+  End If
+  
+  End
+  
+  
+Public Sub MyServerSocket_Error()
+  
+  Message.Error("Puerto no disponible *Parrilla Asistida no funcionará*, reinicie la aplicación y si el error persiste, reinicie el equipo")
+  
+End
+
+Public Sub MyServerSocket_Connection(sHost As String)
+  '*******************************
+  ' A client has arrived!
+  ' let's accept it
+
+  Dim Obj As Socket
+
+  If MyServerSocket.Status <= Net.Inactive Then Return
+ 
+   txtLog.Text = txtLog.Text & "Connection request from : " & sHost & Chr(13) & Chr(10)
+   
+ 
+  Obj = MyServerSocket.Accept()
+  Obj.Blocking = False
+  Inc $iId
+  Obj.Tag = [$iId, 0, ""]
+  
+  'If Obj.Status = Net.Connected Then
+   ' txtLog.Text = txtLog.Text & "Connection from " & Obj.RemoteHost & ":" & Obj.RemotePort & " accepted (local port " & Obj.LocalPort & ")" & Chr(13) & Chr(10) 
+ 'End If
+  
+End
+
+Public Sub Socket_Write()
+  
+  Dim hSocket As Socket = Last
+  Dim iInd As Integer
+  
+  'Debug hSocket;; hSocket.Tag
+  iInd = hSocket.Tag[1]
+  If iInd < 0 Then Return
+  'Print "socket write"
+  Do
+    Inc iInd
+    If iInd > 10 Then
+      hSocket.Tag[1] = -1
+      Return
+    Endif
+    
+    'Debug iInd
+    Try Print #hSocket, iInd & ":" & hSocket.Tag[2] & Space$(512) & "\n";
+        If hSocket.Tag[2] = "Parrilla"
+      Try actualizarParrilla(ListBoxParrillaRaiz)
+    Endif
+    
+    If hSocket.Tag[2] = "Comercial"
+     Try Updatcomer4()
+    Endif
+    
+    
+    
+    If Error Then 
+      Debug Error.Text
+      Break
+    Endif
+  Loop
+  
+  hSocket.Tag[1] = iInd
+  
+Catch
+  
+End
+
+Public Sub Socket_Read()
+
+  Dim sBuf As String
+' Dim iInd As Integer
+  
+  '******************************
+  ' When some data arrives to
+  ' our server, we respond with
+  ' an echo
+  '*********
+  'Print "socket read"
+  If Last.Status <> Net.Connected Then Return
+  Read #Last, sBuf, Lof(Last)
+ txtLog.Text &= "Socket #" & Last.Tag[0] & " --> " & sBuf & "\n"
+  
+  Last.Tag[1] = 0
+  Last.Tag[2] = sBuf
+  
+  Socket_Write
+  
+End
+
+Public Sub Socket_Ready()
+  
+  txtLog.Text &= "-- Client working --\n"
+  
+End
+
+Public Sub Socket_Closed()
+  
+  txtLog.Text &= "Client #" & Last.Tag[0] & " Closed\n"
+
+End
+
+
+
+
+
+
+Public Sub Button2_Click()
+
+    Shell "~/.gradio/bin/parrillaglobal.sh"
+
+End
+
+Public Sub AnadirCue_Click()
+  Dim ruta As String
+  Dim ruta1 As String
+  Dim ruta2 As String
+  ruta2 = DirView1.Current & "/" & FileView1.Current
+ ListBoxParrillaRaiz.Add(ruta2)
+ ' ListBoxParrillaRaiz.Add(Drag.data)
+ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "sed -i '/^$/d' ~/.gradio/data/tmp/playlist*" Wait
+Shell "~/.gradio/bin/cartucho.sh"
+Try actualizarParrilla(ListBoxParrillaRaiz)
+End
+
+
+'''''''''''''BUSCADOR
+'''''''''''''
+
+Public Sub AnadirFind_Click()
+  Dim ruta As String
+  Dim ruta1 As String
+ ListBoxParrillaRaiz.Add(ListBoxResultado.Text)
+ ' ListBoxParrillaRaiz.Add(Drag.data)
+ruta = User.home & "/.gradio/data/tmp/playlist"
+ruta1 = User.home & "/.gradio/data/tmp/playlistg3"
+File.Save(ruta, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Try File.Save(ruta1, ListBoxParrillaRaiz.List.Join("\n") & "\n")
+Shell "sed -i '/^$/d' ~/.gradio/data/tmp/playlist*" Wait
+Shell "~/.gradio/bin/cartucho.sh"
+Try actualizarParrilla(ListBoxParrillaRaiz)
+End
+
+
+
+Public Sub Button9_Click()
+Dim hProc As Process
+Dim msg As String = "."
+Dim nombre As String
+nombre = TextBoxBuscar.Text
+Print nombre
+    If ListBoxResultado[0].Text
+    ListBoxResultado[0].Text = "Cargando"
+    Else
+      ListBoxResultado.Add("Cargando")
+    Endif
+
+   hProc = Exec ["buscar", nombre]
+          Do While hProc.State = 1
+          ListBoxResultado[0].Text = "Buscando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+   Try actualizarBuscar(ListBoxResultado)
+
+End
+
+
+Private Sub cargaBuscar(ruta As String, l As ListBox)
+
+  Dim linea As New String[]
+  Dim a As Integer
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 2
+    l.Add(linea[a])
+  Next
+End
+
+Public Sub actualizarBuscar(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/buscar"
+If Error Then Return
+ cargaBuscar(ruta, l)
+
+End
+
+Public Sub ListBoxResultado_Drag()
+
+
+End
+
+Public Sub CUE5_Click()
+  Dim ruta As String
+  ruta = ListBoxResultado.Text
+  'TextBox2.text = ruta
+  Print "ruta: " & ruta
+  Exec ["cue", ruta]
+  
+End
+
+
+Public Sub ListBoxResultado_Click()
+
+  Dim ruta_cue As String
+  ruta_cue = ListBoxResultado.Text
+'  TextBox2.text = ruta
+  Print "ruta_cue" & ruta_cue
+
+End
+
+
+Public Sub ListBoxResultado_MouseDrag()
+If Mouse.Left Then
+ListBoxResultado.Drag(ListBoxResultado[ListBoxResultado.index].text)
+Endif
+End
+
+
+Public Sub TextBoxBuscar_Activate()
+Dim hProc As Process
+Dim msg As String = "."
+Dim nombre As String
+nombre = TextBoxBuscar.Text
+Print nombre
+    If ListBoxResultado[0].Text
+    ListBoxResultado[0].Text = "Cargando"
+    Else
+      ListBoxResultado.Add("Cargando")
+    Endif
+
+   hProc = Exec ["buscar", nombre]
+          Do While hProc.State = 1
+          ListBoxResultado[0].Text = "Buscando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop
+   Try actualizarBuscar(ListBoxResultado)
+
+End
+
+Public Sub ListBoxComerciales_Click()
+
+  
+
+End
+
+Public Sub Recargar_Click()
+
+DirView1.Reload
+FileView1.Refresh
+
+End
+
+Public Sub Button10_Click()
+
+  Shell "~/.gradio/bin/GR_BuscarCom.gambas"
+
+End
+
+

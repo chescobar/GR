@@ -1,0 +1,8 @@
+Para instalar Guarangoradio descargue el tarball
+Instale la versión de Gambas3 igual o superior a la 3.4.5
+Ubíquese en un terminal en la carpeta en la que lo descargó y ejecute:
+	tar -zxvf GR-0.3.3.tar.gz
+Luego ingrese desde el terminal a la carpeta instalar
+	cd GR-0.3.3/instalar
+Ejecute el script de instalación
+	./instalar.sh

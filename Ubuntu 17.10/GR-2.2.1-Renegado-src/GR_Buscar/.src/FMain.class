@@ -1,0 +1,111 @@
+' Gambas class file
+
+Public Sub Form_Open()
+  ' Update window position from settings file
+  ' If the settings file is not found then
+  ' use default position.
+
+ 
+   With Me
+   '.Width = Desktop.Width
+   '.Height = Desktop.Height
+   .Width = 292 / 1022 * Desktop.Width
+   .Height = 376 / 658 * Desktop.Height
+      .X = 7 / 1022 * Desktop.Width
+   .Y = 102 / 658 * Desktop.Height
+   End With
+   
+
+  With ListBoxResultado
+   .Width = 288 / 1022 * Desktop.Width
+   .Height = 368 / 658 * Desktop.Height
+   .X = 7 / 1022 * Desktop.Width
+   .Y = 15 / 658 * Desktop.Height
+   End With
+
+  With HBox1
+   .Width = 288 / 1022 * Desktop.Width
+   .Height = 340 / 658 * Desktop.Height
+   .X = 4 / 1022 * Desktop.Width
+   .Y = 35 / 658 * Desktop.Height
+   End With
+End
+
+
+
+Public Sub Button1_Click()
+
+  Dim nombre As String
+nombre = TextBoxBuscar.Text
+Print nombre
+   Exec ["buscar", nombre] Wait
+   Try actualizarBuscar(ListBoxResultado)
+
+End
+
+
+Private Sub cargaBuscar(ruta As String, l As ListBox)
+
+  Dim linea As New String[]
+  Dim a As Integer
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 2
+    l.Add(linea[a])
+  Next
+End
+
+Public Sub actualizarBuscar(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/buscar"
+If Error Then Return
+ cargaBuscar(ruta, l)
+
+End
+
+Public Sub ListBoxResultado_Drag()
+
+
+End
+
+Public Sub CUE2_Click()
+  Dim ruta As String
+  ruta = ListBoxResultado.Text
+  'TextBox2.text = ruta
+  Print "ruta: " & ruta
+  Exec ["cue", ruta]
+  
+End
+
+
+Public Sub ListBoxResultado_Click()
+
+  Dim ruta_cue As String
+  ruta_cue = ListBoxResultado.Text
+'  TextBox2.text = ruta
+  Print "ruta_cue" & ruta_cue
+
+End
+
+
+Public Sub ListBoxResultado_MouseDrag()
+If Mouse.Left Then
+ListBoxResultado.Drag(ListBoxResultado[ListBoxResultado.index].text)
+Endif
+End
+
+
+Public Sub TextBoxBuscar_Activate()
+    Dim nombre As String
+nombre = TextBoxBuscar.Text
+Print nombre
+   Exec ["buscar", nombre] Wait
+   Try actualizarBuscar(ListBoxResultado)
+
+End
+

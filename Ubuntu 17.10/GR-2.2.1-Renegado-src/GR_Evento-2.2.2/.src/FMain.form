@@ -1,0 +1,343 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,130,91)
+  Text = ("G Radio - Programar Eventos")
+  Icon = Picture["gradio.png"]
+  Resizable = False
+  { cueZ Menu
+    Text = ("CUE3")
+    Visible = False
+    { CUE3 Menu
+      Text = ("CUE")
+      Picture = Picture["icon:/32/volume"]
+      Shortcut = "Alt+C"
+    }
+    { Subir Menu
+      Text = ("Subir")
+      Picture = Picture["icon:/32/up"]
+      Shortcut = "Alt+S"
+    }
+    { Bajar Menu
+      Text = ("Bajar")
+      Picture = Picture["icon:/32/down"]
+      Shortcut = "Alt+B"
+    }
+    { Borrar Menu
+      Text = ("Borrar")
+      Picture = Picture["icon:/32/delete"]
+      Shortcut = "Alt+X"
+    }
+  }
+  { MenuAnadir Menu
+    Text = ("MenuAnadir")
+    Visible = False
+    { cue2 Menu
+      Text = ("CUE")
+      Picture = Picture["icon:/32/volume"]
+      Shortcut = "Alt+C"
+    }
+    { AnadirParrilla Menu
+      Text = ("Anadir a este corte de comerciales")
+      Picture = Picture["icon:/32/add"]
+      Shortcut = "Alt+A"
+    }
+  }
+  { Frame1 Frame
+    MoveScaled(111,3,18,44)
+    Text = ("Horas")
+    { CheckBox1 RadioButton
+      MoveScaled(0.875,2.625,9.375,3.375)
+      Text = ("00")
+      Value = True
+    }
+    { CheckBox2 RadioButton
+      MoveScaled(0.875,6,9.375,3.375)
+      Text = ("01")
+    }
+    { CheckBox3 RadioButton
+      MoveScaled(0.875,9.375,9.375,3.375)
+      Text = ("02")
+    }
+    { CheckBox4 RadioButton
+      MoveScaled(0.875,12.875,9.375,3.375)
+      Text = ("03")
+    }
+    { CheckBox5 RadioButton
+      MoveScaled(0.875,16.25,9.375,3.375)
+      Text = ("04")
+    }
+    { CheckBox6 RadioButton
+      MoveScaled(0.875,19.75,9.375,3.375)
+      Text = ("05")
+    }
+    { CheckBox7 RadioButton
+      MoveScaled(0.875,23.125,9.375,3.375)
+      Text = ("06")
+    }
+    { CheckBox8 RadioButton
+      MoveScaled(0.875,26.625,9.375,3.375)
+      Text = ("07")
+    }
+    { CheckBox9 RadioButton
+      MoveScaled(0.875,30,9.375,3.375)
+      Text = ("08")
+    }
+    { CheckBox10 RadioButton
+      MoveScaled(0.875,33.375,9.375,3.375)
+      Text = ("09")
+    }
+    { CheckBox11 RadioButton
+      MoveScaled(0.875,36.875,9.375,3.375)
+      Text = ("10")
+    }
+    { CheckBox12 RadioButton
+      MoveScaled(0.875,40.25,9.375,3.375)
+      Text = ("11")
+    }
+    { CheckBox13 RadioButton
+      MoveScaled(10.25,2.625,9.375,3.375)
+      Text = ("12")
+    }
+    { CheckBox14 RadioButton
+      MoveScaled(10.25,6,9.375,3.375)
+      Text = ("13")
+    }
+    { CheckBox15 RadioButton
+      MoveScaled(10.25,9.375,9.375,3.375)
+      Text = ("14")
+    }
+    { CheckBox16 RadioButton
+      MoveScaled(10.25,12.875,9.375,3.375)
+      Text = ("15")
+    }
+    { CheckBox17 RadioButton
+      MoveScaled(10.25,16.25,9.375,3.375)
+      Text = ("16")
+    }
+    { CheckBox18 RadioButton
+      MoveScaled(10.25,19.75,9.375,3.375)
+      Text = ("17")
+    }
+    { CheckBox19 RadioButton
+      MoveScaled(10.25,23.125,9.375,3.375)
+      Text = ("18")
+    }
+    { CheckBox20 RadioButton
+      MoveScaled(10.25,26.625,9.375,3.375)
+      Text = ("19")
+    }
+    { CheckBox21 RadioButton
+      MoveScaled(10.25,30,9.375,3.375)
+      Text = ("20")
+    }
+    { CheckBox22 RadioButton
+      MoveScaled(10.25,33.375,9.375,3.375)
+      Text = ("21")
+    }
+    { CheckBox23 RadioButton
+      MoveScaled(10.25,36.875,9.375,3.375)
+      Text = ("22")
+    }
+    { CheckBox24 RadioButton
+      MoveScaled(10.25,40.25,6,2.625)
+      Text = ("23")
+    }
+  }
+  { Frame2 Frame
+    MoveScaled(111,47,18,19)
+    Text = ("Minutos")
+    { RadioButton5 RadioButton
+      MoveScaled(1.75,15.375,6.875,2.625)
+      Text = ("25")
+    }
+    { RadioButton4 RadioButton
+      MoveScaled(1.75,12.875,6,2.625)
+      Text = ("20")
+    }
+    { RadioButton3 RadioButton
+      MoveScaled(1.75,10.25,6.875,2.625)
+      Text = ("15")
+    }
+    { RadioButton2 RadioButton
+      MoveScaled(1.75,7.75,6.875,2.625)
+      Text = ("10")
+    }
+    { RadioButton1 RadioButton
+      MoveScaled(1.75,5.125,6,2.625)
+      Text = ("5")
+    }
+    { RadioButton6 RadioButton
+      MoveScaled(12,2.625,6,2.625)
+      Text = ("30")
+    }
+    { RadioButton7 RadioButton
+      MoveScaled(12,5.125,6.875,2.625)
+      Text = ("35")
+    }
+    { RadioButton9 RadioButton
+      MoveScaled(12,10.25,6,2.625)
+      Text = ("45")
+    }
+    { RadioButton8 RadioButton
+      MoveScaled(12,7.75,6.875,2.625)
+      Text = ("40")
+    }
+    { RadioButton10 RadioButton
+      MoveScaled(12,12.875,6.875,2.625)
+      Text = ("50")
+    }
+    { RadioButton11 RadioButton
+      MoveScaled(12,15.375,6.875,2.625)
+      Text = ("55")
+    }
+    { RadioButton12 RadioButton
+      MoveScaled(1.75,2.625,7.75,2.625)
+      Text = ("0")
+      Value = True
+    }
+  }
+  { Button33 Button
+    MoveScaled(111,77,17,7)
+    Foreground = &H000000&
+    ToolTip = ("Borrar comerciales caducados")
+    Picture = Picture["icon:/32/erase"]
+  }
+  { Label2 Label
+    MoveScaled(111,67,10,4)
+    Font = Font["Bold,+2"]
+    Background = Color.LightBackground
+    ToolTip = ("Tiempo acumulado en esta hora")
+    Alignment = Align.TopNormal
+  }
+  { Label3 Label
+    MoveScaled(111,72,10,4)
+    Font = Font["Bold,+2"]
+    Background = Color.LightBackground
+    ToolTip = ("Teimpo de este corte")
+    Alignment = Align.TopNormal
+  }
+  { Panel3 Panel
+    MoveScaled(1,6,109,78)
+    { HSplit1 HSplit
+      MoveScaled(0,1,109,77)
+      { VSplit1 VSplit
+        MoveScaled(1,1,57,74)
+        { DirView1 DirView
+          MoveScaled(3,4,59,34)
+          ToolTip = ("Con el botón derecho añada una carpeta al corte")
+          Expand = True
+          PopupMenu = "MenuAnadir"
+        }
+        { FileView1 FileView
+          MoveScaled(3,38,59,32)
+          ToolTip = ("Con el botón derecho añada un audio al corte")
+          Expand = True
+          PopupMenu = "MenuAnadir"
+          ShowDetailed = True
+          ShowPreview = True
+        }
+      }
+      { ListaComerciales ListBox
+        MoveScaled(59,0,48,71)
+        Font = Font["Bold"]
+        Background = &HBFFFCF&
+        ToolTip = ("PROGRAMACIÓN DE COMERCIALES\nPara editar los comerciales, seleccione la hora y minuto a editar. Luego que se carguen los comerciales puede cambiar el orden de estos o insertar nuevos comerciales o carpetas que contengan comerciales.\n\nPara insertar un nuevo comercial o carpeta de comerciales, selecciónelo en la parte izquierda, y luego con el menú contextual presione \"Añadir a este corte de comerciales\" \n")
+        Drop = True
+        PopupMenu = "cueZ"
+        ScrollBar = Scroll.Both
+      }
+    }
+  }
+  { DateBoxInicio DateBox
+    MoveScaled(1,1,16,4)
+    ToolTip = ("Fecha de Inicio")
+  }
+  { DateBoxFin DateBox
+    MoveScaled(17,1,15,4)
+    ToolTip = ("Fecha de finalización")
+  }
+  { Frame3 Frame
+    MoveScaled(32,-2,72,7)
+    ToolTip = ("Días de la semana que va el comercial")
+    { RadioButtonMartes CheckBox
+      MoveScaled(10,3,10,3)
+      Font = Font["-1"]
+      Text = ("Martes")
+    }
+    { RadioButtonLunes CheckBox
+      MoveScaled(1,3,9,3)
+      Font = Font["-1"]
+      Text = ("Lunes")
+    }
+    { RadioButtonMiercoles CheckBox
+      MoveScaled(19,3,11,3)
+      Font = Font["-1"]
+      Text = ("Miércoles")
+    }
+    { RadioButtonJueves CheckBox
+      MoveScaled(30,3,10,3)
+      Font = Font["-1"]
+      Text = ("Jueves")
+    }
+    { RadioButtonViernes CheckBox
+      MoveScaled(40,3,10,3)
+      Font = Font["-1"]
+      Text = ("Viernes")
+    }
+    { RadioButtonSabado CheckBox
+      MoveScaled(50,3,10,3)
+      Font = Font["-1"]
+      Text = ("Sábado")
+    }
+    { RadioButtonDomingo CheckBox
+      MoveScaled(60,3,11,3)
+      Font = Font["-1"]
+      Text = ("Domingo")
+    }
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(121,68,9,3)
+    Font = Font["-2"]
+    Text = ("Acumulado")
+  }
+  { TextLabel2 TextLabel
+    MoveScaled(121,73,9,3)
+    Font = Font["-2"]
+    Text = ("Este corte")
+  }
+  { TextLabel3 TextLabel
+    MoveScaled(2,5,9,3)
+    Font = Font["-2"]
+    Text = ("Inicio")
+  }
+  { TextLabel4 TextLabel
+    MoveScaled(18,5,9,3)
+    Font = Font["-2"]
+    Text = ("Fin")
+  }
+  { ProgressBar1 ProgressBar
+    MoveScaled(56,84,54,1)
+    Foreground = Color.ButtonForeground
+    Label = False
+  }
+  { ButtonURL Button
+    MoveScaled(1,85,6,5)
+    Picture = Picture["icon:/32/internet"]
+  }
+  { TextBoxURL TextBox
+    MoveScaled(7,85,84,5)
+    ToolTip = ("URL para streaming")
+    Text = ("http://www.rvtnapo.com:8000/rvtnapohd")
+  }
+  { TextBoxTime TextBox
+    MoveScaled(91,85,11,5)
+    ToolTip = ("Duración en segundos")
+    Text = ("60")
+  }
+  { TextLabel5 TextLabel
+    MoveScaled(103,87,9,3)
+    Font = Font["-2"]
+    Text = ("Segundos")
+  }
+}

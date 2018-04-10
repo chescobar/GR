@@ -1,0 +1,1445 @@
+' Gambas class file
+
+
+Static Private Dias As String
+Static Private Lunes As String
+Static Private Martes As String
+Static Private Miercoles As String
+Static Private Jueves As String
+Static Private Viernes As String
+Static Private Sabado As String
+Static Private Domingo As String
+Static Private hora As Integer 
+Static Private minuto As Integer
+Public Sub _new()
+DirView1.Current = User.home & "/G Radio"
+FileView1.Current = FileView1.Current
+FileView1.Dir = DirView1.Current
+End
+
+Public Sub Form_Open()
+hora = 24
+minuto = 60
+Shell "~/.gradio/bin/horasreset.sh" Wait
+Shell "~/.gradio/bin/minutoreset.sh" Wait
+CheckBox1_Click()
+RadioButton12_Click()
+End
+
+Public Sub actualizarParrilla(l As ListBox)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/comerciales/" & hora & "/" & minuto & ".com"
+If Error Then Return
+cargaContenido(ruta, l)
+End
+
+
+
+Private Sub cargaContenido(ruta As String, l As ListBox)
+
+  Dim linea As New String[]
+  Dim a As Integer
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 2
+    l.Add(linea[a])
+  Next
+End
+
+Public Sub Button_Borrar_Click()
+
+  Dim posicion As Integer
+  posicion = ListaComerciales.Index
+  Try ListaComerciales.Remove(posicion)
+                Shell "~/.gradio/bin/tiempocomercialesH.sh" Wait
+End
+
+
+Public Sub actualizarLabel2(l As Label)
+          Dim ruta As String
+           'lee archivo
+       Try ruta = User.home & "/.gradio/data/tmp/tiempocomercialesH"
+            'Print "ruta"
+       If Error Then Return
+          Try l.text = File.Load(ruta)
+        If Error Then Return
+          
+End
+          
+Public Sub actualizarLabel3(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/tiempocomercialesM"
+            'Print "ruta"
+       If Error Then Return
+          Try l.text = File.Load(ruta)
+       If Error Then Return
+ End
+
+
+Public Sub CheckBox1_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+
+  If CheckBox1.Value = True Then    
+              If ListaComerciales[0].Text
+            ListaComerciales[0].Text = "Cargando"
+            Else
+              ListaComerciales.Add("Cargando")
+            Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/0" Wait
+       hora = 0
+       hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+          Do While hProc.State = 1
+              ListaComerciales[0].Text = "Cargando" & msg 
+                    Wait 0.2
+                    msg = msg & "."
+          Loop 
+       Try actualizarLabel2(Label2)
+       Try actualizarLabel3(Label3)
+       Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/0"
+  Endif
+
+End
+
+Public Sub CheckBox2_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox2.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/1" Wait
+       hora = 1
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+                     Try actualizarLabel2(Label2)
+                     Try actualizarLabel3(Label3)
+                     Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/1"
+       
+  Endif
+
+End
+
+Public Sub CheckBox3_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox3.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/2" Wait
+       hora = 2
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+                  'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+                     Try actualizarLabel2(Label2)
+                     Try actualizarLabel3(Label3)
+                     Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/2"
+  Endif
+End
+
+Public Sub CheckBox4_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox4.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/3" Wait
+       hora = 3
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/3"
+       
+  Endif
+End
+
+Public Sub CheckBox5_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox5.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/4"
+       hora = 4
+                     hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/4"
+   Endif
+End
+
+Public Sub CheckBox6_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox6.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/5"
+       hora = 5
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/5"
+       
+  Endif
+
+End
+
+Public Sub CheckBox7_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox7.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/6"
+       hora = 6
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/6"
+       
+  Endif
+
+End
+
+Public Sub CheckBox8_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox8.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/7"
+       hora = 7
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/7"
+       
+  Endif
+
+End
+
+Public Sub CheckBox9_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox9.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/8"
+       hora = 8
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/8"
+       
+  Endif
+
+End
+
+Public Sub CheckBox10_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox10.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/9"
+       hora = 9
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/9"
+       
+  Endif
+
+End
+
+Public Sub CheckBox11_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox11.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/10"
+       hora = 10
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/10"
+       
+  Endif
+
+End
+
+Public Sub CheckBox12_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+
+  If CheckBox12.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/11"
+       hora = 11
+          hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh"
+          Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+          Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/11"
+       
+  Endif
+
+End
+
+Public Sub CheckBox13_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox13.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/12"
+       hora = 12
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/12"
+       
+  Endif
+
+End
+
+Public Sub CheckBox14_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox14.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/13"
+       hora = 13
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/13"
+       
+    Endif
+End
+  
+Public Sub CheckBox15_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox15.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/14"
+       hora = 14
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/14"
+       
+  Endif
+
+End
+
+Public Sub CheckBox16_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox16.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/15"
+       hora = 15
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/15"
+       
+  Endif
+
+End
+
+Public Sub CheckBox17_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox17.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/16"
+       hora = 16
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/16"
+       
+  Endif
+
+End
+
+Public Sub CheckBox18_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox18.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/17"
+       hora = 17
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/17"
+       
+  Endif
+
+End
+
+Public Sub CheckBox19_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox19.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/18"
+       hora = 18
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/18"
+       
+  Endif
+
+End
+
+Public Sub CheckBox20_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox20.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/19"
+       hora = 19
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/19"
+       
+  Endif
+
+End
+
+Public Sub CheckBox21_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox21.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/20"
+       hora = 20
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+                Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/20"
+       
+  Endif
+
+End
+
+Public Sub CheckBox22_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox22.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/21"
+       hora = 21
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/21"
+       
+  Endif
+
+End
+
+Public Sub CheckBox23_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox23.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/22"
+       hora = 22
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/22"
+       
+  Endif
+
+End
+
+Public Sub CheckBox24_Click()
+
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+  If CheckBox24.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/23"
+       hora = 23
+              hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+Do While hProc.State = 1
+    ListaComerciales[0].Text = "Cargando" & msg 
+    
+    'ListaComerciales.Add(msg)
+          Wait 0.2
+          msg = msg & "."
+Loop 
+              'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/23"
+       
+  Endif
+
+End
+
+
+Public Sub RadioButton1_Click()
+Dim hProc As Process
+Dim msg As String = "."
+
+  If RadioButton1.Value = True Then
+    ListaComerciales.Clear
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 5
+     Shell "echo 5 > ~/.gradio/data/tmp/MM"
+     hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton12_Click()
+Dim hProc As Process
+Dim msg As String = "."
+
+  If RadioButton12.Value = True Then
+    ListaComerciales.Clear
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 0
+    Shell "echo 0 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+    
+    
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+    
+  Endif
+  
+
+End
+
+Public Sub RadioButton2_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton2.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 10
+    Shell "echo 10 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton3_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton3.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 15
+    Shell "echo 15 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton4_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton4.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 20
+    Shell "echo 20 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton5_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton5.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 25
+    Shell "echo 25 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton6_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton6.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 30
+    Shell "echo 30 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton7_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton7.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 35
+    Shell "echo 35 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton8_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton8.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 40
+    Shell "echo 40 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton9_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton9.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 45
+    Shell "echo 45 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton10_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton10.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 50
+    Shell "echo 50 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub RadioButton11_Click()
+Dim hProc As Process
+Dim msg As String = "."
+ListaComerciales.Clear
+    If RadioButton11.Value = True Then
+    If ListaComerciales[0].Text
+    ListaComerciales[0].Text = "Cargando"
+    Else
+      ListaComerciales.Add("Cargando")
+    Endif
+    minuto = 55
+    Shell "echo 55 > ~/.gradio/data/tmp/MM"
+    hProc = Shell "~/.gradio/bin/tiempocomercialesM.sh"
+        Do While hProc.State = 1
+          ListaComerciales[0].Text = "Cargando" & msg 
+          Wait 0.2
+          msg = msg & "."
+        Loop 
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+              Try actualizarParrilla(ListaComerciales)
+  Endif
+
+End
+
+Public Sub Button20_Click()
+
+  Try actualizarParrilla(ListaComerciales)
+
+End
+
+
+Public Sub Button33_Click()
+
+    Shell "~/.gradio/bin/comercialborrarcaducados.sh" Wait
+           Shell "~/.gradio/bin/tiempocomercialesH.sh" Wait
+   Try actualizarParrilla(ListaComerciales)
+
+End
+
+''''''''''''''''''Menu'''''''''''''''''''
+
+Public Sub Subir_Click()
+Dim rutabash As String
+  Dim anterior As String
+
+  If ListaComerciales.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListaComerciales.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListaComerciales.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListaComerciales[ListaComerciales.Index - 1].Text
+    ListaComerciales[ListaComerciales.Index - 1].Text = ListaComerciales[ListaComerciales.Index].Text
+    ListaComerciales[ListaComerciales.Index].Text = anterior
+    ListaComerciales.Index = ListaComerciales.Index - 1
+    rutabash = User.home & "/.gradio/data/comerciales/" & hora & "/" & minuto & ".com"
+    Try File.Save(rutabash, ListaComerciales.List.Join("\n") & "\n")
+  Endif
+
+End
+
+Public Sub Bajar_Click()
+Dim rutabash As String
+  Dim siguiente As String
+
+  If ListaComerciales.Index = ListaComerciales.Count - 1 Then
+    Message.Error("No se puede bajar más")
+
+  Else If ListaComerciales.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListaComerciales.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    siguiente = ListaComerciales[ListaComerciales.Index + 1].Text
+    ListaComerciales[ListaComerciales.Index + 1].Text = ListaComerciales[ListaComerciales.Index].Text
+    ListaComerciales[ListaComerciales.Index].Text = siguiente
+    ListaComerciales.Index = ListaComerciales.Index + 1
+    rutabash = User.home & "/.gradio/data/comerciales/" & hora & "/" & minuto & ".com"
+    Try File.Save(rutabash, ListaComerciales.List.Join("\n") & "\n")
+
+  Endif
+
+End
+
+
+
+
+Public Sub Borrar_Click()
+Dim hProc As Process
+Dim rutabash As String
+Dim posicion As Integer
+  posicion = ListaComerciales.Index
+  Try ListaComerciales.Remove(posicion)
+    rutabash = User.home & "/.gradio/data/comerciales/" & hora & "/" & minuto & ".com"
+    Try File.Save(rutabash, ListaComerciales.List.Join("\n") & "\n")
+     hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+       ProgressBar1.value = 0
+          Do While hProc.State = 1
+              'ListaComerciales[0].Text = "Cargando" & msg 
+              ProgressBar1.value = ProgressBar1.value + 0.1
+                    Wait 0.2
+                    'msg = msg & "."
+          Loop 
+          ProgressBar1.value = 0
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+    
+End
+
+Public Sub cue2_Click()
+  Dim ruta As String
+  ruta = DirView1.Current & "/" & FileView1.Current
+  Print "ruta_cue" & ruta
+  Exec ["cue", ruta]
+End
+
+Public Sub cue3_Click()
+  Dim ruta As String
+  ruta = ListaComerciales.Text
+  Print "ruta_cue" & ruta
+  Exec ["cue", ruta]
+  
+End
+
+
+Public Sub DirView1_mousedown()
+FileView1.Dir = DirView1.Current
+End
+
+Public Sub DateBoxInicio_MouseDown()
+
+  Print "DateBoxInicio: " & Format(Month(DateBoxInicio.Value), "0#")
+
+End
+
+
+Public Sub AnadirParrilla_Click()
+Dim rutabash As String
+Dim Sobreescribir As Integer
+Dim Ncomerciales As String
+Dim hProc As Process
+Dim msg As String = "."
+Dim ruta As String
+Dim Inicio As String
+Dim Final As String
+Print 
+
+If DateBoxInicio.Value
+If DateDiff(Date(DateBoxInicio.Value), Date(DateBoxFin.Value), gb.day) >= 0
+If Val(Lunes & Martes & Miercoles & Jueves & Viernes & Sabado & Domingo)
+Dias = Lunes & Martes & Miercoles & Jueves & Viernes & Sabado & Domingo
+Inicio = Year(DateBoxInicio.Value) & Format(Month(DateBoxInicio.Value), "0#") & Format(Day(DateBoxInicio.Value), "0#")
+Final = Year(DateBoxFin.Value) & Format(Month(DateBoxFin.Value), "0#") & Format(Day(DateBoxFin.Value), "0#")
+
+  If FileView1.Current
+    ruta = DirView1.Current & "/" & FileView1.Current & "|" & Dias & "|" & Inicio & "|" & Final
+  Else If DirView1.Current
+    ruta = DirView1.Current & "|" & Dias & "|" & Inicio & "|" & Final
+  Endif
+''''''''''''''''''  ' Save the ListBox content to a text file
+rutabash = User.home & "/.gradio/data/comerciales/" & hora & "/" & minuto & ".com"
+ ' Dialog.Filter = ["*.lst", "Lists", "*.txt", "Text Files", "*", "All Files"]
+  'If Dialog.SaveFile() Then Return
+
+Shell "grep -c $ " & rutabash To Ncomerciales
+If Ncomerciales = "" Then 
+  
+Try File.Save(rutabash, ListaComerciales.List.Join("\n") & "\n")
+
+Else
+  
+Sobreescribir = Message.Question("Va a sobreescribir un corte de: " & Ncomerciales & " Comerciales", "Aceptar", "Cancelar")
+ If Sobreescribir = 1 Then
+     ListaComerciales.Add(ruta)
+     Try File.Save(rutabash, ListaComerciales.List.Join("\n") & "\n")
+'           Shell "~/.gradio/bin/tiempocomercialesH.sh" Wait
+       hProc = Shell "~/.gradio/bin/tiempocomercialesH.sh" 
+       ProgressBar1.value = 0
+          Do While hProc.State = 1
+              'ListaComerciales[0].Text = "Cargando" & msg 
+              ProgressBar1.value = ProgressBar1.value + 0.1
+                    Wait 0.2
+                    'msg = msg & "."
+          Loop 
+          ProgressBar1.value = 0
+              Try actualizarLabel3(Label3)
+              Try actualizarLabel2(Label2)
+Else
+  Message.Info("No se actualizaron los comerciales")
+Endif
+
+Endif
+Catch
+Message.Info("No fue posible grabar en:\\n" & rutabash & "\\n" & Error.Text)
+
+Else
+    Message.Warning("No ha seleccionado un día de la semana")
+    Endif
+Else
+Message.Warning("No ha seleccionado correctamente las fechas, no puedo viajar al pasado")
+Endif  
+Else
+  Message.Warning("No ha seleccionado las fechas")
+  Endif
+
+
+
+End
+
+
+
+Public Sub RadioButtonLunes_Click()
+
+  If RadioButtonLunes.Value = True
+  Lunes = 1
+  Else
+    Lunes = Null
+  Endif
+
+End
+
+Public Sub RadioButtonMartes_Click()
+
+    If RadioButtonMartes.Value = True
+  Martes = 2
+  Else
+  Martes = Null
+  Endif
+
+
+End
+
+Public Sub RadioButtonMiercoles_Click()
+
+    If RadioButtonMiercoles.Value = True
+  Miercoles = 3
+  Else
+  Miercoles = Null
+  Endif
+
+
+End
+
+Public Sub RadioButtonJueves_Click()
+
+    If RadioButtonJueves.Value = True
+  Jueves = 4
+  Else
+   Jueves = Null
+  Endif
+
+
+End
+
+Public Sub RadioButtonViernes_Click()
+
+   If RadioButtonViernes.Value = True
+  Viernes = 5
+  Else
+   Viernes = Null
+  Endif
+
+
+End
+
+Public Sub RadioButtonSabado_Click()
+
+    If RadioButtonSabado.Value = True
+  Sabado = 6
+  Else
+   Sabado = Null
+  Endif
+
+
+End
+
+Public Sub RadioButtonDomingo_Click()
+
+    If RadioButtonDomingo.Value = True
+  Domingo = 7
+  Else
+   Domingo = Null
+  Endif
+
+
+End
+
+Public Sub ProgressBar1_MouseDown()
+
+  
+
+End

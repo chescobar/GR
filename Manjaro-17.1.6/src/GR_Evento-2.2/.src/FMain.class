@@ -1,0 +1,540 @@
+' Gambas class file
+
+Static Private hora As Integer 
+Static Private minuto As Integer
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+hora = 24
+minuto = 60
+End
+
+
+Public Sub actualizarParrilla(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/eventos/" & hora & "/" & minuto & ".com"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+
+Public Sub actualizarParrilla2(l As ListBox)
+Dim ruta As String
+Try ruta = User.home & "/.gradio/data/tmp/comercialg3"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+Public Sub Button1_Click()
+Shell "~/.gradio/bin/cargaarchivocom.sh" Wait
+Try actualizarParrilla2(Comercial)
+End
+
+Private Sub cargaContenido(ruta As String, l As ListBox)
+  
+  Dim linea As New String[]
+  Dim a As Integer
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 2
+    l.Add(linea[a])
+  Next
+End
+
+Public Sub Button_Borrar_Click()
+
+  Dim posicion As Integer
+  posicion = ListaComerciales.Index
+  Try ListaComerciales.Remove(posicion)
+
+End
+
+Public Sub bSubir_Click()
+
+  Dim anterior As String
+
+  If ListaComerciales.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListaComerciales.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListaComerciales.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListaComerciales[ListaComerciales.Index - 1].Text
+    ListaComerciales[ListaComerciales.Index - 1].Text = ListaComerciales[ListaComerciales.Index].Text
+    ListaComerciales[ListaComerciales.Index].Text = anterior
+    ListaComerciales.Index = ListaComerciales.Index - 1
+
+  Endif
+
+End
+
+
+Public Sub Button_Insertar_Click()
+
+  Dim Comerinsert As String
+  Comerinsert = Comercial.Text 
+  ListaComerciales.Add(Comerinsert)
+
+End
+
+
+Public Sub ButtonSave_Click()
+Dim ruta As String
+Dim Sobreescribir As Integer
+Dim Ncomerciales As String
+' Save the ListBox content to a text file
+ruta = User.home & "/.gradio/data/eventos/" & hora & "/" & minuto & ".com"
+ ' Dialog.Filter = ["*.lst", "Lists", "*.txt", "Text Files", "*", "All Files"]
+  'If Dialog.SaveFile() Then Return
+  '
+Shell "grep -c $ " & ruta To Ncomerciales
+If Ncomerciales = "" Then 
+  
+Try File.Save(ruta, ListaComerciales.List.Join("\n") & "\n")
+
+Else
+  
+Sobreescribir = Message.Question("Va a sobreescribir un corte de: " & Ncomerciales & " Eventos", "Aceptar", "Cancelar")
+ If Sobreescribir = 1 Then
+Try File.Save(ruta, ListaComerciales.List.Join("\n") & "\n")
+Message.Info("Se actualizaron los eventos")
+
+Else
+  
+  Message.Info("No se actualizaron los eventos")
+Endif
+
+Endif
+Catch
+Message.Info("Cannot save list:\\n" & ruta & "\\n" & Error.Text)
+
+   'Shell "~/.gradio/bin/grabarcomercialesg3.sh"
+  ' Quit
+
+End
+
+
+
+
+
+Public Sub CheckBox1_Click()
+
+  If CheckBox1.Value = True Then
+       hora = 0
+  Endif
+
+End
+
+Public Sub CheckBox2_Click()
+
+  If CheckBox2.Value = True Then
+       hora = 1
+  Endif
+
+End
+
+Public Sub CheckBox3_Click()
+  If CheckBox3.Value = True Then
+         hora = 2
+  Endif
+  
+
+End
+
+Public Sub CheckBox4_Click()
+
+    If CheckBox4.Value = True Then
+       hora = 3
+  Endif
+
+End
+
+Public Sub CheckBox5_Click()
+
+    If CheckBox5.Value = True Then
+       hora = 4
+  Endif
+
+End
+
+Public Sub CheckBox6_Click()
+
+    If CheckBox6.Value = True Then
+       hora = 5
+  Endif
+
+End
+
+Public Sub CheckBox7_Click()
+
+    If CheckBox7.Value = True Then
+       hora = 6
+  Endif
+
+End
+
+Public Sub CheckBox8_Click()
+
+    If CheckBox8.Value = True Then
+       hora = 7
+  Endif
+
+End
+
+Public Sub CheckBox9_Click()
+
+    If CheckBox9.Value = True Then
+       hora = 8
+  Endif
+
+End
+
+Public Sub CheckBox10_Click()
+
+    If CheckBox10.Value = True Then
+       hora = 9
+  Endif
+
+End
+
+Public Sub CheckBox11_Click()
+
+    If CheckBox11.Value = True Then
+       hora = 10
+  Endif
+
+End
+
+Public Sub CheckBox12_Click()
+
+    If CheckBox12.Value = True Then
+         hora = 11
+  Endif
+
+End
+
+Public Sub CheckBox13_Click()
+
+    If CheckBox13.Value = True Then
+       hora = 12
+  Endif
+
+End
+
+Public Sub CheckBox14_Click()
+
+    If CheckBox14.Value = True Then
+       hora = 13
+  Endif
+
+End
+
+Public Sub CheckBox15_Click()
+
+    If CheckBox15.Value = True Then
+       hora = 14
+  Endif
+
+End
+
+Public Sub CheckBox16_Click()
+
+    If CheckBox16.Value = True Then
+       hora = 15
+  Endif
+
+End
+
+Public Sub CheckBox17_Click()
+
+    If CheckBox17.Value = True Then
+       hora = 16
+  Endif
+
+End
+
+Public Sub CheckBox18_Click()
+
+    If CheckBox18.Value = True Then
+       hora = 17
+  Endif
+
+End
+
+Public Sub CheckBox19_Click()
+
+    If CheckBox19.Value = True Then
+       hora = 18
+  Endif
+
+End
+
+Public Sub CheckBox20_Click()
+
+    If CheckBox20.Value = True Then
+       hora = 19
+  Endif
+
+End
+
+Public Sub CheckBox21_Click()
+
+    If CheckBox21.Value = True Then
+       hora = 20
+  Endif
+
+End
+
+Public Sub CheckBox22_Click()
+
+    If CheckBox22.Value = True Then
+       hora = 21
+  Endif
+
+End
+
+Public Sub CheckBox23_Click()
+
+    If CheckBox23.Value = True Then
+       hora = 22
+  Endif
+
+End
+
+Public Sub CheckBox24_Click()
+
+    If CheckBox24.Value = True Then
+       hora = 23
+  Endif
+
+End
+
+
+Public Sub RadioButton1_Click()
+
+  If RadioButton1.Value = True Then
+    minuto = 5
+  Endif
+
+End
+
+Public Sub RadioButton12_Click()
+  If RadioButton12.Value = True Then
+    minuto = 0
+  Endif
+  
+
+End
+
+Public Sub RadioButton2_Click()
+
+    If RadioButton2.Value = True Then
+    minuto = 10
+  Endif
+
+End
+
+Public Sub RadioButton3_Click()
+
+    If RadioButton3.Value = True Then
+    minuto = 15
+  Endif
+
+End
+
+Public Sub RadioButton4_Click()
+
+    If RadioButton4.Value = True Then
+    minuto = 20
+  Endif
+
+End
+
+Public Sub RadioButton5_Click()
+
+    If RadioButton5.Value = True Then
+    minuto = 25
+  Endif
+
+End
+
+Public Sub RadioButton6_Click()
+
+    If RadioButton6.Value = True Then
+    minuto = 30
+  Endif
+
+End
+
+Public Sub RadioButton7_Click()
+
+    If RadioButton7.Value = True Then
+    minuto = 35
+  Endif
+
+End
+
+Public Sub RadioButton8_Click()
+
+    If RadioButton8.Value = True Then
+    minuto = 40
+  Endif
+
+End
+
+Public Sub RadioButton9_Click()
+
+    If RadioButton9.Value = True Then
+    minuto = 45
+  Endif
+
+End
+
+Public Sub RadioButton10_Click()
+
+    If RadioButton10.Value = True Then
+    minuto = 50
+  Endif
+
+End
+
+Public Sub RadioButton11_Click()
+
+    If RadioButton11.Value = True Then
+    minuto = 55
+  Endif
+
+End
+
+Public Sub Button20_Click()
+
+  Try actualizarParrilla(ListaComerciales)
+
+End
+
+
+Public Sub Button2_Click()
+
+  Shell "~/.gradio/bin/cargaarchivointer.sh" Wait
+  Try actualizarParrilla2(Comercial)
+
+End
+
+
+Private Function Foreground_Read() As Integer
+
+  
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  
+
+End
+
+
+
+Public Sub Button3_Click()
+
+  Shell "~/.gradio/bin/cargacarpetaevt.sh" Wait
+Try actualizarParrilla2(Comercial)
+
+End
+
+''''''''''''''''''Menu'''''''''''''''''''
+
+Public Sub Subir_Click()
+
+  Dim anterior As String
+
+  If ListaComerciales.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListaComerciales.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListaComerciales.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListaComerciales[ListaComerciales.Index - 1].Text
+    ListaComerciales[ListaComerciales.Index - 1].Text = ListaComerciales[ListaComerciales.Index].Text
+    ListaComerciales[ListaComerciales.Index].Text = anterior
+    ListaComerciales.Index = ListaComerciales.Index - 1
+
+  Endif
+
+End
+
+Public Sub Bajar_Click()
+
+  Dim siguiente As String
+
+  If ListaComerciales.Index = ListaComerciales.Count - 1 Then
+    Message.Error("No se puede bajar más")
+
+  Else If ListaComerciales.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListaComerciales.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    siguiente = ListaComerciales[ListaComerciales.Index + 1].Text
+    ListaComerciales[ListaComerciales.Index + 1].Text = ListaComerciales[ListaComerciales.Index].Text
+    ListaComerciales[ListaComerciales.Index].Text = siguiente
+    ListaComerciales.Index = ListaComerciales.Index + 1
+
+  Endif
+
+End
+
+
+
+
+Public Sub Borrar_Click()
+
+  Dim posicion As Integer
+  posicion = ListaComerciales.Index
+  Try ListaComerciales.Remove(posicion)
+
+End
+
+Public Sub cue2_Click()
+  Dim ruta As String
+  ruta = Comercial.Text
+  Print "ruta_cue" & ruta
+  Exec ["cue", ruta]
+End
+
+Public Sub cue3_Click()
+  Dim ruta As String
+  ruta = ListaComerciales.Text
+  Print "ruta_cue" & ruta
+  Exec ["cue", ruta]
+  
+End
+
+Public Sub Insertar_Click()
+
+  Dim Comerinsert As String
+  Comerinsert = Comercial.Text 
+  ListaComerciales.Add(Comerinsert)
+
+End
+
+

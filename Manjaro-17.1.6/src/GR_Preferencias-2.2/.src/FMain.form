@@ -1,0 +1,338 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(57.125,7.125,75,61)
+  Text = ("G Radio - Configuraciones ")
+  Icon = Picture["gradio.png"]
+  Resizable = False
+  { Button22 Button
+    MoveScaled(0,26,16,4)
+    Font = Font["-1"]
+    Foreground = &H000000&
+    ToolTip = ("Seleccione el audio para el pisador")
+    Text = ("Cargar Pisador")
+  }
+  { Button23 Button
+    MoveScaled(0,22,33,4)
+    Font = Font["-1"]
+    Foreground = &H000000&
+    ToolTip = ("Defina el tiempo de disparo del pisador")
+    Text = ("Tiempo de Disparo Pisador")
+  }
+  { Label1 Label
+    MoveScaled(23,1,24,6)
+    Font = Font["Bold,+5"]
+    ToolTip = ("Parámetros de configuración GR")
+    Text = ("Configurar GR")
+  }
+  { Button1 Button
+    MoveScaled(0,30,16,4)
+    Font = Font["Bold"]
+    Foreground = &H000000&
+    ToolTip = ("Ponga el nombre de su radio")
+    Text = ("Nombre Radio")
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(64,2,8,8)
+    Picture = Picture["gradio.png"]
+  }
+  { Button3 Button
+    MoveScaled(0,52,33,4)
+    Font = Font["-1"]
+    Foreground = &H000000&
+    ToolTip = ("Defina el tiempo de fundido entre el anuncio de salida y la parrilla")
+    Text = ("Fundido Salida COM")
+  }
+  { Button4 Button
+    MoveScaled(0,48,33,4)
+    Font = Font["-1"]
+    Foreground = &H000000&
+    ToolTip = ("Defina el tiempo de fundido entre el anuncio de entrada y los comerciales")
+    Text = ("Fundido Entrada COM")
+  }
+  { Button6 Button
+    MoveScaled(0,56,33,4)
+    Font = Font["-1"]
+    Foreground = &H000000&
+    ToolTip = ("Defina el tiempo de fundido entre comerciales")
+    Text = ("Fundido Entre COMERCIALES")
+  }
+  { Label3 Label
+    MoveScaled(6,40,23,4)
+    Font = Font["Bold,+5"]
+    ToolTip = ("Configurar parámetros para los Comerciales")
+    Text = ("Comerciales")
+  }
+  { Button2 Button
+    MoveScaled(40,14,26,4)
+    Foreground = &H000000&
+    ToolTip = ("Establezca el deplazamiento hacia el segundo monitor")
+    Text = ("Configurar Desplazamiento")
+  }
+  { Label2 Label
+    MoveScaled(53,6,10,4)
+    Font = Font["Bold,+5"]
+    ToolTip = ("Configurar parámetros para TV")
+    Text = ("G TV")
+  }
+  { Button5 Button
+    MoveScaled(40,22,34,4)
+    Foreground = &H000000&
+    ToolTip = ("Configure el Teletexto para los siguientes vídeo")
+    Text = ("Configurar Teletexto")
+  }
+  { Button7 Button
+    MoveScaled(40,30,16,4)
+    Font = Font["-1"]
+    Foreground = &H000000&
+    ToolTip = ("Seleccione el logo sobre el vídeo\nen formato PNG")
+    Text = ("Cargar logo (PNG)")
+  }
+  { Label4 Label
+    MoveScaled(10,6,14,4)
+    Font = Font["Bold,+5"]
+    Tag = "Parrilla"
+    ToolTip = ("Configurar parámetros para los Comerciales")
+    Text = ("Parrilla")
+  }
+  { Label5 Label
+    MoveScaled(48,39,15,4)
+    Font = Font["Bold,+5"]
+    ToolTip = ("Cambiar la Interfaz Gráfica")
+    Text = ("Interfaz")
+  }
+  { Button8 Button
+    MoveScaled(40,44,34,4)
+    Foreground = &H000000&
+    ToolTip = ("Cambiar la Interfaz Gráfica")
+    Text = ("Seleccionar Interfaz Gráfica GR")
+  }
+  { Label6 Label
+    MoveScaled(33,10,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { CheckBox2 Button
+    MoveScaled(0,10,33,4)
+    Font = Font["Bold"]
+    Foreground = &H000000&
+    ToolTip = ("Fundir los temas musicales")
+    Text = ("Fundir los temas de la parrilla")
+  }
+  { Label7 Label
+    MoveScaled(33,14,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Button36 Button
+    MoveScaled(0,14,33,4)
+    Font = Font["-1"]
+    Foreground = &H000000&
+    ToolTip = ("Defina el tiempo de fundido")
+    Text = ("Tiempo de Fundido")
+  }
+  { CheckBox1 Button
+    MoveScaled(0,18,33,4)
+    Font = Font["Bold"]
+    Foreground = &H000000&
+    ToolTip = ("Pisa los temas musicales")
+    Text = ("Habilitar Pisador sobre la música")
+  }
+  { Label8 Label
+    MoveScaled(33,18,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label9 Label
+    MoveScaled(33,22,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label10 Label
+    MoveScaled(16,26,22,4)
+    Font = Font["Bold,-2"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label11 Label
+    MoveScaled(16,30,22,4)
+    Font = Font["Bold,-2"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { CheckBox7 Button
+    MoveScaled(0,34,33,4)
+    Font = Font["Bold,-1"]
+    Foreground = &H000000&
+    ToolTip = ("Envía los temas musicales a twitter. Configure primero twidge")
+    Text = ("Habilitar Mensajes Twidge (Twitter)")
+  }
+  { Label12 Label
+    MoveScaled(33,34,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { CheckBox3 Button
+    MoveScaled(0,44,33,4)
+    Font = Font["Bold,-1"]
+    Foreground = &H000000&
+    ToolTip = ("Anunciar la entrada y salida de comerciales")
+    Text = ("Anuncio de Espacio Publicitario")
+  }
+  { Label13 Label
+    MoveScaled(33,44,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label14 Label
+    MoveScaled(33,48,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label15 Label
+    MoveScaled(33,52,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label16 Label
+    MoveScaled(33,56,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { CheckBox4 Button
+    MoveScaled(40,10,29,4)
+    Font = Font["Bold,+1"]
+    Foreground = &H000000&
+    ToolTip = ("Anunciar la entrada y salida de comerciales")
+    Drop = True
+    Text = ("FullScreen  G-Televisión")
+  }
+  { Label17 Label
+    MoveScaled(69,10,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label18 Label
+    MoveScaled(66,14,8,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { CheckBox5 Button
+    MoveScaled(40,18,29,4)
+    Font = Font["Bold,+1"]
+    Foreground = &H000000&
+    ToolTip = ("Habilitar el teletexto para que se muestre sobre el video")
+    Drop = True
+    Text = ("Habilitar Teletexto")
+  }
+  { Label19 Label
+    MoveScaled(69,18,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { CheckBox6 Button
+    MoveScaled(40,26,29,4)
+    Font = Font["Bold,+1"]
+    Foreground = &H000000&
+    ToolTip = ("Habilitar el logo para que se muestre sobre el video")
+    Drop = True
+    Text = ("Habilitar Logo")
+  }
+  { Label20 Label
+    MoveScaled(69,26,5,4)
+    Font = Font["Bold,+1"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label21 Label
+    MoveScaled(56,30,18,4)
+    Font = Font["Bold,-2"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Label22 Label
+    MoveScaled(40,48,34,4)
+    Font = Font["Bold,-2"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Button9 Button
+    MoveScaled(40,56,4,4)
+    Foreground = &H000000&
+    ToolTip = ("Cambiar la Interfaz de audio para el CUE")
+    Text = ("0")
+  }
+  { Label23 Label
+    MoveScaled(64,56,10,4)
+    Font = Font["Bold,-2"]
+    Background = &H00FF00&
+    Alignment = Align.Top
+    Border = Border.Etched
+  }
+  { Button10 Button
+    MoveScaled(44,56,4,4)
+    Foreground = &H000000&
+    ToolTip = ("Cambiar la Interfaz de audio para el CUE")
+    Text = ("1")
+  }
+  { Button11 Button
+    MoveScaled(48,56,4,4)
+    Foreground = &H000000&
+    ToolTip = ("Cambiar la Interfaz de audio para el CUE")
+    Text = ("2")
+  }
+  { Button12 Button
+    MoveScaled(52,56,4,4)
+    Foreground = &H000000&
+    ToolTip = ("Cambiar la Interfaz de audio para el CUE")
+    Text = ("3")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(41,53,31,2)
+    Text = ("Seleccionar Interfaz de audio CUE GR ")
+  }
+  { Button13 Button
+    MoveScaled(56,56,4,4)
+    Foreground = &H000000&
+    ToolTip = ("Cambiar la Interfaz de audio para el CUE")
+    Text = ("4")
+  }
+  { Button14 Button
+    MoveScaled(60,56,4,4)
+    Foreground = &H000000&
+    ToolTip = ("Probar la interfaz CUE seleccionada.")
+    Picture = Picture["icon:/32/volume"]
+  }
+  { ColorButtonFondo ColorButton
+    MoveScaled(62,39,11,5)
+  }
+}

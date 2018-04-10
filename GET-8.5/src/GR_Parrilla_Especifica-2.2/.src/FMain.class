@@ -1,0 +1,849 @@
+' Gambas class file
+
+Static Private hora As Integer 
+Static Private minuto As Integer
+Static Private dia As Integer 
+'Static Private ruta As String
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+hora = 24
+minuto = 60
+Shell "~/.gradio/bin/horasreset.sh" Wait
+Shell "~/.gradio/bin/minutoreset.sh" Wait
+'GetFileView()
+DirView1.Current = User.home & "/G Radio"
+FileView1.Current = FileView1.Current
+FileView1.Dir = DirView1.Current
+End
+
+Public Sub actualizarParrilla(l As ListBox)
+
+Dim ruta As String
+Dim hora1 As Integer
+hora1 = hora + 1
+Try ruta = User.home & "/.gradio/data/parrilla/" & dia & "/" & hora & "-" & hora1 & ".mus" 
+
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+
+Public Sub actualizarParrilla2(l As ListBox)
+
+Dim ruta As String
+
+Try ruta = User.home & "/.gradio/data/tmp/parrillag3"
+If Error Then Return
+ cargaContenido(ruta, l)
+
+End
+
+'Public Sub Button1_Click()
+'Shell "~/.gradio/bin/cargaarchivoparrilla.sh" Wait
+'Try actualizarParrilla2(Comercial)
+'End
+
+'Public Sub Button2_Click()
+'Shell "~/.gradio/bin/cargacarpetaparrilla.sh" Wait
+'Try actualizarParrilla2(Comercial)
+'End
+
+Private Sub cargaContenido(ruta As String, l As ListBox)
+
+  Dim linea As New String[]
+  Dim a As Integer
+
+  
+  Try linea = Split(File.Load(ruta), "\n")
+ 'If Error Then Return
+  l.Clear()
+  For a = 0 To linea.count - 2
+    l.Add(linea[a])
+  Next
+End
+
+Public Sub ButtonBorrar_Click()
+
+  Dim posicion As Integer
+  posicion = ListBoxParrilla.Index
+  Try ListBoxParrilla.Remove(posicion)
+
+End
+
+Public Sub bSubir_Click()
+
+  Dim anterior As String
+
+  If ListBoxParrilla.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListBoxParrilla.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrilla.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListBoxParrilla[ListBoxParrilla.Index - 1].Text
+    ListBoxParrilla[ListBoxParrilla.Index - 1].Text = ListBoxParrilla[ListBoxParrilla.Index].Text
+    ListBoxParrilla[ListBoxParrilla.Index].Text = anterior
+    ListBoxParrilla.Index = ListBoxParrilla.Index - 1
+
+  Endif
+
+End
+
+
+
+
+
+
+
+'Public Sub Insertar_Click()
+
+'  Dim Comerinsert As String
+'  Comerinsert = Comercial.Text 
+'  ListBoxParrilla.Add(Comerinsert)
+
+'End
+
+
+Public Sub ButtonSave_Click()
+Dim ruta As String
+Dim hora1 As Integer
+Dim Sobreescribir As Integer
+Dim Ncomerciales As String
+
+If CheckBox1.Value = True Or If CheckBox2.Value = True Or If CheckBox3.Value = True Or If CheckBox4.Value = True Or If CheckBox5.Value = True Or If CheckBox6.Value = True Or If CheckBox7.Value = True Or If CheckBox8.Value = True Or If CheckBox9.Value = True Or If CheckBox10.Value = True Or If CheckBox11.Value = True Or If CheckBox12.Value = True Or If CheckBox13.Value = True Or If CheckBox14.Value = True Or If CheckBox15.Value = True Or If CheckBox16.Value = True Or If CheckBox17.Value = True Or If CheckBox18.Value = True Or If CheckBox19.Value = True Or If CheckBox20.Value = True Or If CheckBox21.Value = True Or If CheckBox22.Value = True Or If CheckBox23.Value = True Or If CheckBox24.Value = True Then
+   If RadioButtonLunes.Value = True Or If RadioButtonMartes.Value = True Or If RadioButtonMiercoles.Value = True Or If RadioButtonJueves.Value = True Or If RadioButtonViernes.Value = True Or If RadioButtonSabado.Value = True Or If RadioButtonDomingo.Value = True Then
+ hora1 = hora + 1
+' Save the ListBox content to a text file
+ruta = User.home & "/.gradio/data/parrilla/" & dia & "/" & hora & "-" & hora1 & ".mus"
+ ' Dialog.Filter = ["*.lst", "Lists", "*.txt", "Text Files", "*", "All Files"]
+  'If Dialog.SaveFile() Then Return
+
+Shell "grep -c $ " & ruta To Ncomerciales
+If Ncomerciales = "" Then 
+  
+Try File.Save(ruta, ListBoxParrilla.List.Join("\n") & "\n")
+
+Else
+  
+Sobreescribir = Message.Question("Va a sobreescribir una ranura de: " & Ncomerciales & " Líneas", "Aceptar", "Cancelar")
+ If Sobreescribir = 1 Then
+Try File.Save(ruta, ListBoxParrilla.List.Join("\n") & "\n")
+          '    Shell "~/.gradio/bin/tiempocomercialesH.sh" Wait
+          '    Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+           '   
+           '   Try actualizarLabel2(Label2)
+Message.Info("Se actualizó la parrilla")
+
+Else
+  
+  Message.Info("No se actualizó la parrilla")
+Endif
+
+Endif
+Catch
+Message.Info("No fue posible grabar en:\\n" & ruta & "\\n" & Error.Text)
+
+   'Shell "~/.gradio/bin/grabarcomercialesg3.sh"
+  ' Quit
+   Quit
+   Else
+     Message.Info("No ha seleccionado día")
+     Endif
+     Else
+     Message.Info("No ha seleccionado hora")
+  Endif
+
+End
+
+          Public Sub actualizarLabel2(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/tiempocomercialesH"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          
+          End
+          
+          Public Sub actualizarLabel3(l As Label)
+          Dim ruta As String
+           'lee archivo
+          Try ruta = User.home & "/.gradio/data/tmp/tiempocomercialesM"
+          If Error Then Return
+          Try l.text = File.Load(ruta)
+          If Error Then Return
+          
+          End
+
+
+Public Sub CheckBox1_Click()
+
+  If CheckBox1.Value = True Then
+    Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/0" Wait
+       hora = 0
+       Shell "~/.gradio/bin/tiempocomercialesH.sh" Wait
+           Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/0"
+  Endif
+
+End
+
+Public Sub CheckBox2_Click()
+
+  If CheckBox2.Value = True Then
+    Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/1" Wait
+       hora = 1
+
+    
+              
+              
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/1"
+  Endif
+
+End
+
+Public Sub CheckBox3_Click()
+  If CheckBox3.Value = True Then
+    Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/2" Wait
+       hora = 2
+
+    
+              
+              
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/2"
+  Endif
+  
+
+End
+
+Public Sub CheckBox4_Click()
+
+    If CheckBox4.Value = True Then
+    Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/3" Wait
+       hora = 3
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/3"
+  Endif
+
+End
+
+Public Sub CheckBox5_Click()
+
+    If CheckBox5.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/4"
+       hora = 4
+       
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/4"
+  Endif
+
+End
+
+Public Sub CheckBox6_Click()
+
+    If CheckBox6.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/5"
+       hora = 5
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/5"
+  Endif
+
+End
+
+Public Sub CheckBox7_Click()
+
+    If CheckBox7.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/6"
+       hora = 6
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/6"
+  Endif
+
+End
+
+Public Sub CheckBox8_Click()
+
+    If CheckBox8.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/7"
+       hora = 7
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/7"
+  Endif
+
+End
+
+Public Sub CheckBox9_Click()
+
+    If CheckBox9.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/8"
+       hora = 8
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/8"
+  Endif
+
+End
+
+Public Sub CheckBox10_Click()
+
+    If CheckBox10.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/9"
+       hora = 9
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/9"
+  Endif
+
+End
+
+Public Sub CheckBox11_Click()
+
+    If CheckBox11.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/10"
+       hora = 10
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/10"
+  Endif
+
+End
+
+Public Sub CheckBox12_Click()
+
+    If CheckBox12.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/11"
+       hora = 11
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/11"
+  Endif
+
+End
+
+Public Sub CheckBox13_Click()
+
+    If CheckBox13.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/12"
+       hora = 12
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/12"
+  Endif
+
+End
+
+Public Sub CheckBox14_Click()
+
+    If CheckBox14.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/13"
+       hora = 13
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/13"
+  Endif
+
+End
+
+Public Sub CheckBox15_Click()
+
+    If CheckBox15.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/14"
+       hora = 14
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/14"
+  Endif
+
+End
+
+Public Sub CheckBox16_Click()
+
+    If CheckBox16.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/15"
+       hora = 15
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/15"
+  Endif
+
+End
+
+Public Sub CheckBox17_Click()
+
+    If CheckBox17.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/16"
+       hora = 16
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/16"
+  Endif
+
+End
+
+Public Sub CheckBox18_Click()
+
+    If CheckBox18.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/17"
+       hora = 17
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/17"
+  Endif
+
+End
+
+Public Sub CheckBox19_Click()
+
+    If CheckBox19.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/18"
+       hora = 18
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/18"
+  Endif
+
+End
+
+Public Sub CheckBox20_Click()
+
+    If CheckBox20.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/19"
+       hora = 19
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/19"
+  Endif
+
+End
+
+Public Sub CheckBox21_Click()
+
+    If CheckBox21.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/20"
+       hora = 20
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/20"
+  Endif
+
+End
+
+Public Sub CheckBox22_Click()
+
+    If CheckBox22.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/21"
+       hora = 21
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/21"
+  Endif
+
+End
+
+Public Sub CheckBox23_Click()
+
+    If CheckBox23.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/22"
+       hora = 22
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/22"
+  Endif
+
+End
+
+Public Sub CheckBox24_Click()
+
+    If CheckBox24.Value = True Then
+       Shell "~/.gradio/bin/horasreset.sh" Wait
+       Shell "echo 1 > ~/.gradio/data/tmp/23"
+       hora = 23
+
+
+       
+       
+         Else
+       Shell "echo 0 > ~/.gradio/data/tmp/23"
+  Endif
+
+End
+
+
+
+
+Public Sub Frame1_MouseDown()
+Dim hora As String
+   If CheckBox23.Value = True Then
+     hora = 23
+   Endif
+
+End
+
+Public Sub RadioButtonMartes_Click()
+
+  If RadioButtonMartes.Value = True Then
+   dia = 2
+  '   Shell "echo 5 > ~/.gradio/data/tmp/MM"
+  '   Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+  Endif
+
+End
+
+Public Sub RadioButtonLunes_Click()
+  If RadioButtonLunes.Value = True Then
+    dia = 1
+    'Shell "echo 0 > ~/.gradio/data/tmp/MM"
+    'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+  Endif
+  
+
+End
+
+Public Sub RadioButtonMiercoles_Click()
+
+    If RadioButtonMiercoles.Value = True Then
+   dia = 3
+    'Shell "echo 10 > ~/.gradio/data/tmp/MM"
+   ' Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+  Endif
+
+End
+
+Public Sub RadioButtonJueves_Click()
+
+    If RadioButtonJueves.Value = True Then
+    dia = 4
+    'Shell "echo 15 > ~/.gradio/data/tmp/MM"
+   ' Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+  Endif
+
+End
+
+Public Sub RadioButtonViernes_Click()
+
+    If RadioButtonViernes.Value = True Then
+   dia = 5
+  '  Shell "echo 20 > ~/.gradio/data/tmp/MM"
+'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+  Endif
+
+End
+
+Public Sub RadioButtonSabado_Click()
+
+    If RadioButtonSabado.Value = True Then
+  dia = 6
+    'Shell "echo 25 > ~/.gradio/data/tmp/MM"
+'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+  Endif
+
+End
+
+Public Sub RadioButtonDomingo_Click()
+
+    If RadioButtonDomingo.Value = True Then
+    dia = 7
+    'Shell "echo 25 > ~/.gradio/data/tmp/MM"
+'Shell "~/.gradio/bin/tiempocomercialesM.sh" Wait
+
+  Endif
+
+End
+
+
+
+Public Sub Button20_Click()
+
+  Try actualizarParrilla(ListBoxParrilla)
+
+End
+
+
+'''''''''''''''''' MENU
+
+Public Sub BorrarTodo_Click()
+  
+ListBoxParrilla.Clear()  
+End
+
+Public Sub Subir_Click()
+
+  Dim anterior As String
+
+  If ListBoxParrilla.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListBoxParrilla.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrilla.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListBoxParrilla[ListBoxParrilla.Index - 1].Text
+    ListBoxParrilla[ListBoxParrilla.Index - 1].Text = ListBoxParrilla[ListBoxParrilla.Index].Text
+    ListBoxParrilla[ListBoxParrilla.Index].Text = anterior
+    ListBoxParrilla.Index = ListBoxParrilla.Index - 1
+
+  Endif
+
+End
+
+Public Sub Bajar_Click()
+
+  Dim siguiente As String
+
+  If ListBoxParrilla.Index = ListBoxParrilla.Count - 1 Then
+    Message.Error("No se puede bajar más")
+
+  Else If ListBoxParrilla.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrilla.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    siguiente = ListBoxParrilla[ListBoxParrilla.Index + 1].Text
+    ListBoxParrilla[ListBoxParrilla.Index + 1].Text = ListBoxParrilla[ListBoxParrilla.Index].Text
+    ListBoxParrilla[ListBoxParrilla.Index].Text = siguiente
+    ListBoxParrilla.Index = ListBoxParrilla.Index + 1
+
+  Endif
+
+End
+
+Public Sub Duplicar_Click()
+
+  Dim siguiente As String
+  Dim ii As Integer
+
+  'If ListBoxParrilla.Index = ListBoxParrilla.Count - 1 Then
+   ' Message.Error("No se puede bajar más")
+   'ListBoxParrilla.Add(ListBoxParrilla[ListBoxParrilla.Index].Text)
+
+  If ListBoxParrilla.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrilla.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+
+  Else
+    
+    ii = ListBoxParrilla.Count
+    ListBoxParrilla.Add(ListBoxParrilla[ListBoxParrilla.count].Text)
+    While ii > ListBoxParrilla.Index - 1
+      ListBoxParrilla[ii + 1].Text = ListBoxParrilla[ii].Text
+      ii = ii - 1
+    Wend
+    
+    siguiente = ListBoxParrilla[ListBoxParrilla.Index].Text
+    ListBoxParrilla[ListBoxParrilla.Index + 1].Text = ListBoxParrilla[ListBoxParrilla.Index].Text
+    ListBoxParrilla[ListBoxParrilla.Index].Text = siguiente
+    ListBoxParrilla.Index = ListBoxParrilla.Index + 1
+    
+
+  Endif
+
+End
+
+
+
+Public Sub Borrar_Click()
+
+  Dim posicion As Integer
+  posicion = ListBoxParrilla.Index
+  Try ListBoxParrilla.Remove(posicion)
+
+End
+
+Public Sub cue_Click()
+  Dim ruta As String
+  ruta = DirView1.Current & "/" & FileView1.Current
+  'TextBox2.text = ruta
+  Print "ruta_cue" & ruta
+  Exec ["cue", ruta]
+End
+
+Public Sub AnadirParrilla_Click()
+  
+  Dim ruta As String
+  If FileView1.Current
+    ruta = DirView1.Current & "/" & FileView1.Current
+  Else If DirView1.Current
+    ruta = DirView1.Current & "/*"
+  Endif
+  ListBoxParrilla.Add(ruta)
+  
+End
+
+
+Public Sub DirView1_Drag()
+
+  Drag.Data = DirView1.Current
+
+End
+
+
+Public Sub Button1_Click()
+
+  ListBoxParrilla.Add("Hora")
+
+End
+
+Public Sub Button4_Click()
+
+    Dim siguiente As String
+
+  If ListBoxParrilla.Index = ListBoxParrilla.Count - 1 Then
+    Message.Error("No se puede bajar más")
+
+  Else If ListBoxParrilla.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrilla.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    siguiente = ListBoxParrilla[ListBoxParrilla.Index + 1].Text
+    ListBoxParrilla[ListBoxParrilla.Index + 1].Text = ListBoxParrilla[ListBoxParrilla.Index].Text
+    ListBoxParrilla[ListBoxParrilla.Index].Text = siguiente
+    ListBoxParrilla.Index = ListBoxParrilla.Index + 1
+
+  Endif
+
+End
+
+Public Sub Button2_Click()
+
+    Dim anterior As String
+
+  If ListBoxParrilla.Index = 0 Then
+    Message.Error("No se puede subir más")
+
+  Else If ListBoxParrilla.count = 0 Then
+    Message.Error("La lista de elementos está vacía")
+
+  Else If ListBoxParrilla.Index = -1 Then
+    Message.Error("Primero selecciona un elemento")
+
+  Else
+    anterior = ListBoxParrilla[ListBoxParrilla.Index - 1].Text
+    ListBoxParrilla[ListBoxParrilla.Index - 1].Text = ListBoxParrilla[ListBoxParrilla.Index].Text
+    ListBoxParrilla[ListBoxParrilla.Index].Text = anterior
+    ListBoxParrilla.Index = ListBoxParrilla.Index - 1
+
+  Endif
+
+End
+
+
+Public Sub DirView1_mousedown()
+FileView1.Dir = DirView1.Current
+End
